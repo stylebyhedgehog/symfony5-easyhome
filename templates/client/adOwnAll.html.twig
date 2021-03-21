@@ -1,0 +1,44 @@
+{# templates/registration/index.html.twig #} {% extends 'client/navigation.html.twig' %} {%
+    block body %}
+    {% if app.user.roles %}
+        <div class="container">
+            <table class="table">
+                <tr>
+                    <th>ID</th>
+                    <th>Город</th>
+                    <th>Адрес</th>
+                    <th>Квартира</th>
+                    <th>Площадь</th>
+                    <th>Описание</th>
+                    <th>Цена</th>
+                    <th>Статус</th>
+                    <th>Дата создания</th>
+                    <th>Дата обновления</th>
+                    <th>Агент</th>
+                    <th>Арендатор</th>
+                </tr>
+                {% for ad in ads %}
+                    <tr>
+                        <th>{{ ad.id }}</th>
+                        <th>{{ ad.city }}</th>
+                        <th>{{ ad.address }}</th>
+                        <th>{{ ad.flat }}</th>
+                        <th>{{ ad.sqr }}</th>
+                        <th>{{ ad.description }}</th>
+                        <th>{{ ad.price }}</th>
+                        <th>{{ ad.status }}</th>
+                        <th>{{ ad.createDate|date("d-m-Y H:i") }}</th>
+                        <th>{{ ad.updateDate|date("d-m-Y H:i") }}</th>
+                        <th>{{ ad.agent.username }}</th>
+{#                        <th>{{ ad.renter.username }}</th>#}
+                    </tr>
+
+                {% endfor %}
+
+            </table>
+        </div>
+    {% else %}
+        <h1>Only for logged users</h1>
+    {% endif %}
+
+{% endblock %}
