@@ -3,8 +3,8 @@
 namespace App\Form;
 
 use App\Entity\Ad;
-use Doctrine\DBAL\Types\DateType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -44,6 +44,11 @@ class AdType extends AbstractType
                 'constraints' => [
                     new NotBlank(['message' => 'price  cannot be blank!']),
                 ]
+            ])
+            ->add('images', FileType::class, [
+                'multiple' => true,
+                'mapped' => false,
+                'required' => false
             ])
 
         ;

@@ -20,7 +20,7 @@ class ClientController extends AbstractController
      */
     public function index()
     {
-        return $this->render('global/greeting.html.twig');
+        return $this->render('general/greeting.html.twig');
     }
 
 }

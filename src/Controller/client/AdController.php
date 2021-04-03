@@ -3,6 +3,7 @@
 namespace App\Controller\client;
 
 use App\Entity\Ad;
+use App\Entity\AdImage;
 use App\Form\AdType;
 use App\Repository\AdRepository;
 use App\Repository\ClientRepository;
@@ -14,6 +15,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 /**
  * @Route ("/client/{id_client}/ads")
@@ -32,7 +34,7 @@ class AdController extends AbstractController
 
 
     /**
-     * @Route("/create", name="client_ad_own_create")
+     * @Route("/create", name="client_ad_own_create", methods={"GET","POST"})
      * @param Request $request
      * @return Response
      */
@@ -53,9 +55,24 @@ class AdController extends AbstractController
             $ad->setUpdateDate($current_time);
             $ad->setStatus(AdEnum::$status_wait_verification);
 
+            $images = $form->get('images')->getData();
+            //TODO НОРМАЛЬНЫЙ ПУТЬ
+            $upload_directory="images";
+
+            foreach ($images as $image){
+                $imageAd= new AdImage();
+                //TODO ШИФРОВАТЬ
+                $originalFilename = $image->getClientOriginalName();
+                $image->move(
+                    $upload_directory,
+                    $originalFilename
+                );
+                $imageAd->setFilename($originalFilename);
+               $ad->addImage($imageAd);
+     }
             $this->entityManager->persist($ad);
             $this->entityManager->flush();
-            return $this->redirectToRoute('client_ad_own_all');
+//            return $this->redirectToRoute('client_ad_own_all');
         }
         return $this->render('client/adOwnCE.html.twig', [
             'form' => $form->createView(),
@@ -70,16 +87,25 @@ class AdController extends AbstractController
      */
     public function ownAll(Request $request)
     {
+
         $ads = $this->adRepository->findBy(array("owner"=>$request->get("id_client")));
         return $this->render('client/adOwnAll.html.twig', [
             'ads' => $ads,
         ]);
     }
-    function debug_to_console($data) {
-        $output = $data;
-        if (is_array($output))
-            $output = implode(',', $output);
 
-        echo "<script>console.log('Debug Objects: " . $output . "' );</script>";
+    /**
+     * @Route("/{id_ad}", name="client_ad_one")
+     * @param Request $request
+     * @return Response
+     */
+    public function one(Request $request)
+    {
+
+        $ad = $this->adRepository->find($request->get("id_ad"));
+        return $this->render('client/adOne.html.twig', [
+            'ad' => $ad,
+        ]);
     }
+
 }

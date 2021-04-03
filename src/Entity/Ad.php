@@ -6,6 +6,8 @@ namespace App\Entity;
 use App\Repository\AdRepository;
 use DateTime;
 use DateTimeInterface;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
@@ -80,11 +82,20 @@ class Ad
     private $create_date;
 
     /**
+
      * @ORM\Column(name="update_date",type="datetime", nullable=false)
      */
     private $update_date;
 
+    /**
+     * @ORM\OneToMany(targetEntity="AdImage", mappedBy="ad", cascade={"persist"})
+     */
+    private $images;
 
+    public function __construct()
+    {
+        $this->images = new ArrayCollection();
+    }
     public function getId(): ?int
     {
         return $this->id;
@@ -233,6 +244,36 @@ class Ad
     public function setSqr(int $sqr): self
     {
         $this->sqr = $sqr;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|AdImage[]
+     */
+    public function getImages(): Collection
+    {
+        return $this->images;
+    }
+
+    public function addImage(AdImage $image): self
+    {
+        if (!$this->images->contains($image)) {
+            $this->images[] = $image;
+            $image->setAd($this);
+        }
+
+        return $this;
+    }
+
+    public function removeImage(AdImage $image): self
+    {
+        if ($this->images->removeElement($image)) {
+            // set the owning side to null (unless already changed)
+            if ($image->getAd() === $this) {
+                $image->setAd(null);
+            }
+        }
 
         return $this;
     }

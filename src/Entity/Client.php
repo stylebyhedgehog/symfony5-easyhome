@@ -47,15 +47,20 @@ class Client implements UserInterface
     private $controlled_ads;
 
     /**
-     * @ORM\OneToMany(targetEntity="Ad", mappedBy="renter")
+     * @ORM\OneToMany(targetEntity="Favorite", mappedBy="renter")
      */
     private $rented_ads;
 
+    /**
+     * @ORM\OneToMany(targetEntity="Favorite", mappedBy="client")
+     */
+    private $favorite_ads;
     public function __construct() {
 
         $this->controlled_ads = new ArrayCollection();
         $this->posted_ads = new ArrayCollection();
         $this->rented_ads = new ArrayCollection();
+        $this->favorite_ads = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -242,5 +247,37 @@ class Client implements UserInterface
 
         return $this;
     }
+
+    /**
+     * @return Collection|Favorite[]
+     */
+    public function getFavoriteAds(): Collection
+    {
+        return $this->favorite_ads;
+    }
+
+    public function addFavoriteAd(Favorite $favoriteAd): self
+    {
+        if (!$this->favorite_ads->contains($favoriteAd)) {
+            $this->favorite_ads[] = $favoriteAd;
+            $favoriteAd->setClient($this);
+        }
+
+        return $this;
+    }
+
+    public function removeFavoriteAd(Favorite $favoriteAd): self
+    {
+        if ($this->favorite_ads->removeElement($favoriteAd)) {
+            // set the owning side to null (unless already changed)
+            if ($favoriteAd->getClient() === $this) {
+                $favoriteAd->setClient(null);
+            }
+        }
+
+        return $this;
+    }
+
+
 
 }
