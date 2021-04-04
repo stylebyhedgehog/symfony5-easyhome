@@ -46,21 +46,7 @@
                 <div class="row">
                     {# Фильтры #}
                     <div class="col-3 card">
-                        {# Фильтр по цене #}
-                        <div class="row">
-                            <h5>Стоимость</h5>
-                            <div class="input-group-sm mb-3">
-                                <input type="number" step="1000" class="form-control shadow-none" placeholder="От">
-                                <input type="number" step="1000" class="form-control shadow-none" placeholder="До">
-                            </div>
-                        </div>
-                        <div class="row">
-                            <h5>Площадь</h5>
-                            <div class="input-group-sm mb-3">
-                                <input type="number" step="0.1" class="form-control shadow-none" placeholder="От">
-                                <input type="number" step="0.1" class="form-control shadow-none" placeholder="До">
-                            </div>
-                        </div>
+                        {% include 'general/ad/adBlockFilter.html.twig' %}
 
                     </div>
                     {# Объявления #}

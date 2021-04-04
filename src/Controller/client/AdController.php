@@ -33,66 +33,8 @@ class AdController extends AbstractController
     }
 
 
-    /**
-     * @Route("/create", name="client_ad_own_create", methods={"GET","POST"})
-     * @param Request $request
-     * @return Response
-     */
-    public function ownCreate(Request $request)
-    {
-        $ad = new Ad();
-        $form = $this->createForm(AdType::class,$ad);
-        $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
 
-            $owner=$this->clientRepository->find($request->get("id_client"));
-            $ad->setOwner($owner);
-            $current_time=new DateTime();
-            $agent=$this->clientRepository->find(AdService::getAgent());
-            $ad->setAgent($agent);
-            $ad->setCreateDate($current_time);
-            $ad->setUpdateDate($current_time);
-            $ad->setStatus(AdEnum::$status_wait_verification);
-
-            $images = $form->get('images')->getData();
-            //TODO НОРМАЛЬНЫЙ ПУТЬ
-            $upload_directory="images";
-
-            foreach ($images as $image){
-                $imageAd= new AdImage();
-                //TODO ШИФРОВАТЬ
-                $originalFilename = $image->getClientOriginalName();
-                $image->move(
-                    $upload_directory,
-                    $originalFilename
-                );
-                $imageAd->setFilename($originalFilename);
-               $ad->addImage($imageAd);
-     }
-            $this->entityManager->persist($ad);
-            $this->entityManager->flush();
-//            return $this->redirectToRoute('client_ad_own_all');
-        }
-        return $this->render('client/adOwnCE.html.twig', [
-            'form' => $form->createView(),
-        ]);
-
-    }
-
-    /**
-     * @Route("/", name="client_ad_own_all")
-     * @param Request $request
-     * @return Response
-     */
-    public function ownAll(Request $request)
-    {
-
-        $ads = $this->adRepository->findBy(array("owner"=>$request->get("id_client")));
-        return $this->render('client/adOwnAll.html.twig', [
-            'ads' => $ads,
-        ]);
-    }
 
     /**
      * @Route("/{id_ad}", name="client_ad_one")

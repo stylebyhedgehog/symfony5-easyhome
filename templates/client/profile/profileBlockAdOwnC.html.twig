@@ -1,0 +1,48 @@
+{% extends 'client/profile/profile.html.twig' %} {% block active_block %}
+
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="card bg-light col-4" style="width: 800px">
+                <div class="card-body">
+                    <div class="card-header mb-3">Создать объявление</div>
+                    {{ form_start(form) }}
+                    <div class="form_group">
+                        {{ form_row(form.city, {'attr': {'class': 'form-control'} , 'label': 'Город' }) }}
+                    </div>
+                    <div class="form_group">
+                        {{ form_row(form.address, {'attr': {'class':
+                            'form-control'} ,  'label': 'Адрес'}) }}
+                    </div>
+                    <div class="form_group">
+                        {{ form_row(form.flat, {'attr': {'class':
+                            'form-control'} ,  'label': 'Квартира'}) }}
+                    </div>
+                    <div class="form_group">
+                        {{ form_row(form.sqr, {'attr': {'class':
+                            'form-control'} ,  'label': 'Площадь'}) }}
+                    </div>
+                    <div class="form_group">
+                        {{ form_row(form.description, {'attr': {'class':
+                            'form-control'} ,  'label': 'Описание'}) }}
+                    </div>
+
+                    <div class="form_group">
+                        {{ form_row(form.price, {'attr': {'class':
+                            'form-control'} ,  'label': 'Цена'}) }}
+                    </div>
+                    <div class="form_group">
+                        {{ form_row(form.images, {'attr': {'class':
+                            'form-control'} ,  'label': 'Цена'}) }}
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fa fa-btn fa-user"></i> Добавить
+                        </button>
+                    </div>
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
