@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\Service\enum;
+namespace App\Service\constants;
 
 
 class AdEnum

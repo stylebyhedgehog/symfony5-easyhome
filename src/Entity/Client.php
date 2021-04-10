@@ -6,6 +6,7 @@ use App\Repository\ClientRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\OneToOne;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
@@ -47,7 +48,7 @@ class Client implements UserInterface
     private $controlled_ads;
 
     /**
-     * @ORM\OneToMany(targetEntity="Favorite", mappedBy="renter")
+     * @ORM\OneToMany(targetEntity="Ad", mappedBy="renter")
      */
     private $rented_ads;
 
@@ -55,12 +56,29 @@ class Client implements UserInterface
      * @ORM\OneToMany(targetEntity="Favorite", mappedBy="client")
      */
     private $favorite_ads;
+
+    /**
+     * @ORM\OneToMany(targetEntity="Review", mappedBy="rater")
+     */
+    private $posted_reviews;
+
+    /**
+     * @ORM\OneToMany(targetEntity="Review", mappedBy="client")
+     */
+    private $client_reviews;
+
+    /**
+     * @OneToOne(targetEntity="PersonalData", mappedBy="client")
+     */
+    private $personal_data;
     public function __construct() {
 
         $this->controlled_ads = new ArrayCollection();
         $this->posted_ads = new ArrayCollection();
         $this->rented_ads = new ArrayCollection();
         $this->favorite_ads = new ArrayCollection();
+        $this->posted_reviews = new ArrayCollection();
+        $this->client_reviews = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -214,7 +232,6 @@ class Client implements UserInterface
     }
     public function __toString()
     {
-        // TODO: Implement __toString() method.
         return $this->getUsername();
     }
 
@@ -274,6 +291,88 @@ class Client implements UserInterface
                 $favoriteAd->setClient(null);
             }
         }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Review[]
+     */
+    public function getPostedReviews(): Collection
+    {
+        return $this->posted_reviews;
+    }
+
+    public function addPostedReview(Review $postedReview): self
+    {
+        if (!$this->posted_reviews->contains($postedReview)) {
+            $this->posted_reviews[] = $postedReview;
+            $postedReview->setRater($this);
+        }
+
+        return $this;
+    }
+
+    public function removePostedReview(Review $postedReview): self
+    {
+        if ($this->posted_reviews->removeElement($postedReview)) {
+            // set the owning side to null (unless already changed)
+            if ($postedReview->getRater() === $this) {
+                $postedReview->setRater(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Review[]
+     */
+    public function getClientReviews(): Collection
+    {
+        return $this->client_reviews;
+    }
+
+    public function addClientReview(Review $clientReview): self
+    {
+        if (!$this->client_reviews->contains($clientReview)) {
+            $this->client_reviews[] = $clientReview;
+            $clientReview->setClient($this);
+        }
+
+        return $this;
+    }
+
+    public function removeClientReview(Review $clientReview): self
+    {
+        if ($this->client_reviews->removeElement($clientReview)) {
+            // set the owning side to null (unless already changed)
+            if ($clientReview->getClient() === $this) {
+                $clientReview->setClient(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getPersonalData(): ?PersonalData
+    {
+        return $this->personal_data;
+    }
+
+    public function setPersonalData(?PersonalData $personal_data): self
+    {
+        // unset the owning side of the relation if necessary
+        if ($personal_data === null && $this->personal_data !== null) {
+            $this->personal_data->setClient(null);
+        }
+
+        // set the owning side of the relation if necessary
+        if ($personal_data !== null && $personal_data->getClient() !== $this) {
+            $personal_data->setClient($this);
+        }
+
+        $this->personal_data = $personal_data;
 
         return $this;
     }

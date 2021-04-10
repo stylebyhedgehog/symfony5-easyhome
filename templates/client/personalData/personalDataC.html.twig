@@ -1,0 +1,23 @@
+{% extends 'client/profile.html.twig' %}
+{% block active_block %}
+    {% form_theme form 'bootstrap_4_layout.html.twig' %}
+    {% if app.user.id==app.request.get('id_client') %}
+        {{ form_start(form) }}
+        <div class="mb-3">
+            {{ form_row(form.name) }}
+        </div>
+        <div class="mb-3">
+            {{ form_row(form.surname) }}
+        </div>
+        <div class="mb-3">
+            {{ form_row(form.passport) }}
+        </div>
+        <div class="mb-3">
+            {{ form_row(form.save) }}
+        </div>
+
+        {{ form_end(form) }}
+    {% else %}
+        Ошибка доступа
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends 'client/profile.html.twig' %} {% block active_block %}
+    {% if app.user.id==app.request.get('id_client') %}
+
+        {% if personal_data is empty %}
+            <a href="{{ path('client_personal_data_create',{'id_client':app.user.id}) }}">
+                <div class="alert alert-danger" role="alert">
+                    Заполните личные
+                    данные!
+                </div>
+            </a>
+        {% else %}
+            <div class="mb-3">
+                Имя: {{ personal_data.name }}
+            </div>
+            <div class="mb-3">
+                Фамилия: {{ personal_data.surname }}
+            </div>
+            <div class="mb-3">
+                Паспорт: {{ personal_data.passport }}
+            </div>
+
+        {% endif %}
+
+    {% else %}
+        {% if personal_data is not empty %}
+            <div class="mb-3">
+                Имя: {{ personal_data.name }}
+            </div>
+            <div class="mb-3">
+                Фамилия: {{ personal_data.surname }}
+            </div>
+        {% else %}
+            Данный пользователь еще не заполнил личные данные
+        {% endif %}
+    {% endif %}
+{% endblock %}

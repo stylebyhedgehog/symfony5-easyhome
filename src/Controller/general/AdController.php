@@ -9,7 +9,7 @@ use App\Repository\AdRepository;
 use App\Repository\ClientRepository;
 use App\Repository\FavoriteRepository;
 use App\Service\AdService;
-use App\Service\enum\AdEnum;
+use App\Service\constants\AdEnum;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -27,14 +27,14 @@ class AdController extends AbstractController
     private $entityManager;
     private $clientRepository;
     private $favoriteRepository;
-    public function __construct(FavoriteRepository $favoriteRepository,ClientRepository $clientRepository,AdRepository $adRepository, EntityManagerInterface $entityManager)
+
+    public function __construct(FavoriteRepository $favoriteRepository, ClientRepository $clientRepository, AdRepository $adRepository, EntityManagerInterface $entityManager)
     {
-        $this->favoriteRepository=$favoriteRepository;
+        $this->favoriteRepository = $favoriteRepository;
         $this->adRepository = $adRepository;
         $this->entityManager = $entityManager;
-        $this->clientRepository=$clientRepository;
+        $this->clientRepository = $clientRepository;
     }
-
 
 
     /**
@@ -44,16 +44,19 @@ class AdController extends AbstractController
      */
     public function all(Request $request)
     {
-        $user=$this->get('security.token_storage')->getToken()->getUser();
-        $favorites=$this->clientRepository->find($user)->getFavoriteAds();
-        $favorites_id=[];
-        foreach($favorites as $favorite){
-            array_push($favorites_id,$favorite->getAd()->getId());
-        }
+        $user = $this->getUser();
+        $favorites_id = [];
         $ads = $this->adRepository->findAll();
+
+        if ($user) {
+            $favorites = $this->clientRepository->find($user)->getFavoriteAds();
+            foreach ($favorites as $favorite) {
+                array_push($favorites_id, $favorite->getAd()->getId());
+            }
+        }
         return $this->render('general/adAll.html.twig', [
             'ads' => $ads,
-            'favorites_id' =>$favorites_id
+            'favorites_id' => $favorites_id
         ]);
     }
 
@@ -65,17 +68,18 @@ class AdController extends AbstractController
     public function one(Request $request)
     {
         $ad = $this->adRepository->find($request->get("id_ad"));
-        //TODO УПАКОВАТЬ В THIS МАССИВ
-        $user=$this->get('security.token_storage')->getToken()->getUser();
-        $favorites=$this->clientRepository->find($user)->getFavoriteAds();
-        $favorites_id=[];
-        foreach($favorites as $favorite){
-            array_push($favorites_id,$favorite->getAd()->getId());
+        $user = $this->getUser();
+        $favorites_id = [];
+        if ($user) {
+            $favorites = $this->clientRepository->find($user)->getFavoriteAds();
+            foreach ($favorites as $favorite) {
+                array_push($favorites_id, $favorite->getAd()->getId());
+            }
         }
 
         return $this->render('general/adOne.html.twig', [
             'ad' => $ad,
-            'favorites_id' =>$favorites_id
+            'favorites_id' => $favorites_id
         ]);
     }
 

@@ -1,0 +1,45 @@
+{% extends 'client/profile.html.twig' %} {% block active_block %}
+
+    <style>
+        .review-item:hover{
+            border:1px;
+        }
+    </style>
+    {% if app.user.id != app.request.get('id_client') %}
+        {% include 'client/review/reviewC.html.twig' with {'form': form} %}
+    {% endif %}
+
+    {% if reviews is empty %}
+        <div class="alert alert-secondary" role="alert">
+            Нет отзывов
+        </div>
+    {% else %}
+        <div class="pt-4">
+            <h6>Комментарии</h6>
+        {% for review in reviews|reverse %}
+                <div class="review-item card border-0 pt-1 mb-2 me-10 shadow bg-white rounded">
+                    <div class="card-header">
+                        <a href="{{ path('client_personal_data',{'id_client':review.rater.id}) }}"
+                           class="">Автор: {{ review.rater}}</a>
+                    </div>
+                    <div class="p-2">
+                        {{ review.text }}
+                    </div>
+                    <div class="d-flex justify-content-between text-secondary ps-1 pe-1">
+                        <div>
+{#                            TODO ВИЗУАЛИЗАЦИЯ ЗВЕЗД#}
+                            {{ review.rating }}
+                        </div>
+                        <div>
+                            {{ review.createDate|date("d.m.Y H:i") }}
+
+                        </div>
+                    </div>
+                </div>
+        {% endfor %}
+        </div>
+    {% endif %}
+
+
+
+{% endblock %}

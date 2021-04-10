@@ -1,0 +1,37 @@
+{% extends 'client/profile.html.twig' %}
+{% block active_block %}
+    {% form_theme form 'bootstrap_4_layout.html.twig' %}
+
+    {% if app.user.id==app.request.get('id_client') %}
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="card bg-light col-4" style="width: 800px">
+                    <div class="card-body">
+                        <div class="card-header mb-3">Создать объявление</div>
+                        {{ form_start(form) }}
+                        {{ form_row(form.city, { 'label': 'Город' }) }}
+
+                        {{ form_row(form.address, {'label': 'Адрес'}) }}
+
+                        {{ form_row(form.flat, {'label': 'Квартира'}) }}
+
+                        {{ form_row(form.sqr, { 'label': 'Площадь'}) }}
+
+                        {{ form_row(form.description, {'label': 'Описание'}) }}
+
+                        {{ form_row(form.price, { 'label': 'Цена'}) }}
+
+                        {{ form_row(form.images,{ 'label': 'Изображения'}) }}
+
+                        {{ form_row(form.save,{ 'label': 'Добавить'}) }}
+
+
+                        {{ form_end(form) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        Ошибка доступа
+    {% endif %}
+{% endblock %}

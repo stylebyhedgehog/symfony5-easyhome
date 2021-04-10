@@ -23,9 +23,13 @@ class FavoriteController extends AbstractController
     private $entityManager;
     private $clientRepository;
     private $adRepository;
+
     /**
      * FavoriteController constructor.
-     * @param $favoriteRepository
+     * @param AdRepository $adRepository
+     * @param ClientRepository $clientRepository
+     * @param FavoriteRepository $favoriteRepository
+     * @param EntityManagerInterface $entityManager
      */
     public function __construct(AdRepository $adRepository, ClientRepository $clientRepository,FavoriteRepository $favoriteRepository,EntityManagerInterface $entityManager)
     {
@@ -36,11 +40,29 @@ class FavoriteController extends AbstractController
     }
 
     /**
+     * @Route("/", name="client_favorite")
+     * @param Request $request
+     * @return Response
+     */
+    public function all(Request $request){
+        $user=$this->get('security.token_storage')->getToken()->getUser();
+        $favorites=$this->clientRepository->find($user)->getFavoriteAds();
+        $favorite_ads=[];
+        foreach($favorites as $favorite){
+            array_push($favorite_ads, $favorite->getAd());
+        }
+        return $this->render('client/profile/favoriteAll.html.twig', [
+            'favorites' =>$favorite_ads
+        ]);
+    }
+
+    /**
      * @Route("/create", name="client_favorite_create")
      * @param Request $request
      * @return Response
      */
     public function create(Request $request){
+        //TODO РАЗРЕШИТЬ ТОЛЬКО ДЛЯ ХОЗЯИНА
         $favorite=new Favorite();
         $favorite->setClient($this->clientRepository->find($request->get("id_client")));
         $favorite->setAd($this->adRepository->find($request->get("id_ad")));
@@ -60,6 +82,6 @@ class FavoriteController extends AbstractController
         $this->entityManager->remove($favorite[0]);
         $this->entityManager->flush();
         //TODO В ШАБЛОН СО ВСЕМИ ОБЪЯВЛЕНИЯМИ НЕ ДОЛЖЕН УХОДИТЬ id_ad
-        return $this->redirectToRoute($request->get('current_template'),["id_ad"=>$request->get("id_ad")]);
+        return $this->redirectToRoute($request->get('current_template'),["id_ad"=>$request->get("id_ad"),"id_client"=>$request->get("id_client")]);
     }
 }
