@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Client;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
@@ -35,6 +36,7 @@ class ClientRepository extends ServiceEntityRepository implements PasswordUpgrad
         $this->_em->persist($user);
         $this->_em->flush();
     }
+
 
     // /**
     //  * @return Client[] Returns an array of Client objects

@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\Controller\general;
+namespace App\Controller;
 
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
@@ -25,13 +25,13 @@ class Greeting extends AbstractController
      * @return Response
      */
     public function greet(){
-        if ($this->security->isGranted('ROLE_ADD')) {
+        if ($this->security->isGranted('ROLE_USER')) {
             $message="welcome";
         }
         else{
-            $message="how are u";
+            $message="who are u";
         }
-        return $this->render('general/greeting.html.twig', [
+        return $this->render('greeting.html.twig', [
             'message' => $message,
         ]);
     }

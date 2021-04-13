@@ -37,7 +37,7 @@ class AdType extends AbstractType
                     new NotBlank(['message' => 'flat  cannot be blank!']),
                 ]
             ])
-            ->add('sqr', IntegerType::class)
+            ->add('sqr')
             ->add('description', TextareaType::class, [
                 'constraints' => [
                     new NotBlank(['message' => 'The description cannot be blank!']),
@@ -51,8 +51,7 @@ class AdType extends AbstractType
             ])
             ->add('images', FileType::class, [
                 'multiple' => true,
-                'mapped' => false,
-                'required' => false
+                'mapped' => false
             ])
             ->add('save', SubmitType::class)
         ;

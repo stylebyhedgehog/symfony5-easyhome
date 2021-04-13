@@ -1,5 +1,5 @@
-{% extends 'client/navigation.html.twig' %} {% block body %}
-    <script src="{{ asset('js/ad/price_pattern.js') }}"></script>
+{% extends 'navigation.html.twig' %} {% block body %}
+{#    <script src="{{ asset('js/ad/price_pattern.js') }}"></script>#}
     <style>
         .carousel-item {
             width: 100%;
@@ -57,7 +57,7 @@
                                 </div>
                                 <div class="nav-item">
                                     <a class="nav-link nav-profile"
-                                       href="{{ path('client_favorite',{'id_client':app.user.id}) }}">
+                                       href="{{ path('client_favorite_all',{'id_client':app.user.id}) }}">
                                         Избранное
                                     </a>
                                 </div>

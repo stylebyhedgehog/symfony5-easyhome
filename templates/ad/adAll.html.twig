@@ -1,0 +1,71 @@
+{% extends 'navigation.html.twig' %}
+{% block body %}
+    {# TODO ПЕРЕДЕЛАТЬ ЭТОТ УЖАС #}
+    <script src="{{ asset('js/ad/price_pattern.js') }}"></script>
+    <style>
+        .carousel-item {
+            width: 100%;
+            height: 200px;
+            overflow: hidden;
+        }
+
+        .carousel-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        a {
+            color: black;
+            text-decoration: none;
+        }
+
+        a:hover {
+            color: dimgrey;
+        }
+
+    </style>
+    {# TODO НЕ ОТОБРАЖАТЬ СОХРАНЕНИЕ В ИЗБРАННОЕ ДЛЯ НЕ ЗАЛОГНЕНЫХ #}
+    <div class="container">
+        {# Поиск #}
+        <div class="row ">
+            {{ form_start(form, {'attr': {'id': 'form_person_edit'}}) }}
+            <div class="input-group mb-3">
+                {{ form_widget(form.q) }}
+                <span class="input-group-text" id="basic-addon2">
+                         <svg xmlns="http://www.w3.org/2000/svg" width="16"
+                              height="16" fill="currentColor"
+                              class="bi bi-search" viewBox="0 0 16 16">
+                            <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                         </svg>
+                    </span>
+            </div>
+        </div>
+        <div class="d-flex justify-content-end">
+            {{ form_widget(form.sort_param) }}
+        </div>
+{# TODO СДЕЛАТЬ МЕНЮШКУ КНОПКОЙ ПРИ УМЕНЬШЕНИИ РАЗМЕРА#}
+        <div class="album py-3 bg-light">
+            <div class="row">
+                {# Фильтры #}
+                <div class="col-3 card ">
+                    {% include 'ad/adBlockFilter.html.twig' with {'form':form} %}
+
+                </div>
+                {# Объявления #}
+                <div class="col-9  ">
+                    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-1">
+
+                        {% for ad in ads %}
+                            {% include 'ad/adAllEl.html.twig' with {'ad': ad,'current_template': 'general_ad_all'} %}
+
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+{% endblock %}

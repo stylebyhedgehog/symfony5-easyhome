@@ -1,9 +1,10 @@
 <?php
 
 
-namespace App\Controller\client;
+namespace App\Controller;
 
 
+use App\Entity\Client;
 use App\Entity\Review;
 use App\Form\ReviewType;
 use App\Repository\ClientRepository;
@@ -48,7 +49,7 @@ class ReviewController extends AbstractController
         //form
         $form=$this->create($id_client,$request);
 
-        return $this->render('client/review/review.html.twig', [
+        return $this->render('review/review.html.twig', [
             'reviews' =>$reviews,
             'form' => $form->createView(),
         ]);

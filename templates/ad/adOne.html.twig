@@ -1,6 +1,5 @@
-{# templates/registration/index.html.twig #} {% extends 'client/navigation.html.twig' %}
+{% extends 'navigation.html.twig' %}
 {% block body %}
-    <script src="{{ asset('js/ad/price_pattern.js') }}"></script>
     <style>
         .carousel-item {
             width: 100%;
@@ -74,14 +73,53 @@
                             <h5>{{ "г. "~ad.city ~", ул. "~ ad.address ~", "~ ad.sqr }} <span
                                         style="white-space: nowrap;"> м<sup>2</sup></span></h5>
                         </div>
-                        {# Владелец #}
+
                         <div class="row ">
-                            {% if app.user.id == ad.owner.id %}
-                            <div class="text-info">Это Ваше объявление</div>
-                            {% else %}
-                                <a href="{{ path('client_personal_data',{'id_client':ad.owner.id}) }}"
-                                   class="">Разместил: {{ ad.owner }}</a>
-                            {% endif %}
+                            <div class="d-flex justify-content-between align-items-center">
+                                {# Владелец #}
+                                <div>
+                                    {% if app.user and app.user.id == ad.owner.id %}
+                                        <div class="text-info">Это Ваше объявление</div>
+                                    {% else %}
+                                        <a href="{{ path('client_personal_data',{'id_client':ad.owner.id}) }}"
+                                           class="">Разместил: {{ ad.owner }}</a>
+                                    {% endif %}
+                                </div>
+                                {# Избранное #}
+                                <div>
+                                    {% if app.user %}
+                                        {% if ad.owner.id == app.user.id%}
+                                            {{ad.status}}
+                                        {% elseif is_granted('ROLE_AGENT') %}
+                                            {{ form_start(form) }}
+                                            {{ form_widget(form.status) }}
+                                            {{ form_widget(form.save) }}
+                                            {{ form_end(form) }}
+                                        {% else %}
+                                            {% if current_template == "client_favorite_all" or ad.id in favorites_id %}
+                                                <a href="{{ path('client_favorite_remove', {'id_ad': ad.id, 'id_client': app.user.id, 'current_template':current_template}) }}">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16"
+                                                         height="16" fill="currentColor"
+                                                         class="bi bi-heart-fill" viewBox="0 0 16 16">
+                                                        <path fill-rule="evenodd"
+                                                              d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"/>
+                                                    </svg>
+                                                </a>
+                                            {% else %}
+                                                <a href="{{ path('client_favorite_create', {'id_ad': ad.id, 'id_client': app.user.id, 'current_template':current_template }) }}">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16"
+                                                         height="16" fill="currentColor" class="bi bi-heart"
+                                                         viewBox="0 0 16 16">
+                                                        <path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01L8 2.748zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143c.06.055.119.112.176.171a3.12 3.12 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15z"/>
+                                                    </svg>
+                                                </a>
+                                            {% endif %}
+                                        {% endif %}
+
+                                    {% endif %}
+                                </div>
+                            </div>
+
                         </div>
                         {# Цена #}
                         <div class="row align-items-center ">
@@ -93,34 +131,6 @@
                         {# Описание #}
                         <div class="row">
                             <div class="card">{{ ad.description }}</div> </div>
-                        {# Избранное #}
-                        <div class="row bottom-0 end-0">
-                            <div class="d-flex flex-row-reverse ">
-                                {% if favorites_id is not empty %}
-                                    {% if ad.id in favorites_id %}
-                                        <a type="button" class="btn"
-                                           href="{{ path('client_favorite_remove', {'id_ad': ad.id, 'id_client': app.user.id, 'current_template':'general_ad_one'}) }}">
-                                            В избранном
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                                 fill="currentColor" class="bi bi-heart-fill" viewBox="0 0 16 16">
-                                                <path fill-rule="evenodd"
-                                                      d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"/>
-                                            </svg>
-                                        </a>
-                                    {% else %}
-                                        <a type="button" class="btn "
-                                           href="{{ path('client_favorite_create', {'id_ad': ad.id, 'id_client': app.user.id, 'current_template':'general_ad_one' }) }}">
-                                            Сохранить
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                                 fill="currentColor" class="bi bi-heart" viewBox="0 0 16 16">
-                                                <path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01L8 2.748zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143c.06.055.119.112.176.171a3.12 3.12 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15z"/>
-                                            </svg>
-                                        </a>
-                                    {% endif %}
-                                {% endif %}
-                            </div>
-
-                        </div>
                     </div>
                 </div>
             </div>

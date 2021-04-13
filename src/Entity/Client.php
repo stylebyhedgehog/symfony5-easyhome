@@ -270,7 +270,11 @@ class Client implements UserInterface
      */
     public function getFavoriteAds(): Collection
     {
-        return $this->favorite_ads;
+        $ads_collection=new ArrayCollection();
+        foreach ($this->favorite_ads as $favorite_ad){
+            $ads_collection->add( $favorite_ad->getAd());
+        }
+        return $ads_collection;
     }
 
     public function addFavoriteAd(Favorite $favoriteAd): self
@@ -376,7 +380,6 @@ class Client implements UserInterface
 
         return $this;
     }
-
 
 
 }

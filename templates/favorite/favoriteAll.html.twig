@@ -1,0 +1,18 @@
+{% extends 'profile.html.twig' %} {% block active_block %}
+    {% if app.user.id==app.request.get('id_client') %}
+        {% if favorites is empty %}
+            <div class="alert alert-secondary" role="alert">
+                Список избранное пуст
+            </div>
+        {% else %}
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-1">
+                {% for ad in favorites %}
+                    {% include 'ad/adAllEl.html.twig' with {'ad': ad ,'current_template': 'client_favorite_all'} %}
+
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% else %}
+        Ошибка доступа
+    {% endif %}
+{% endblock %}

@@ -1,4 +1,4 @@
-{% extends 'client/profile.html.twig' %} {% block active_block %}
+{% extends 'profile.html.twig' %} {% block active_block %}
 
     <style>
         .review-item:hover{
@@ -6,7 +6,7 @@
         }
     </style>
     {% if app.user.id != app.request.get('id_client') %}
-        {% include 'client/review/reviewC.html.twig' with {'form': form} %}
+        {% include 'review/reviewC.html.twig' with {'form': form} %}
     {% endif %}
 
     {% if reviews is empty %}

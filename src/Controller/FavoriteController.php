@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\Controller\client;
+namespace App\Controller;
 
 
 use App\Entity\Favorite;
@@ -40,20 +40,18 @@ class FavoriteController extends AbstractController
     }
 
     /**
-     * @Route("/", name="client_favorite")
+     * @Route("/", name="client_favorite_all")
      * @param Request $request
      * @return Response
      */
     public function all(Request $request){
-        $user=$this->get('security.token_storage')->getToken()->getUser();
+        $user=$this->getUser();
         $favorites=$this->clientRepository->find($user)->getFavoriteAds();
-        $favorite_ads=[];
-        foreach($favorites as $favorite){
-            array_push($favorite_ads, $favorite->getAd());
-        }
-        return $this->render('client/profile/favoriteAll.html.twig', [
-            'favorites' =>$favorite_ads
+
+        return $this->render('favorite/favoriteAll.html.twig', [
+            'favorites' =>$favorites
         ]);
+
     }
 
     /**

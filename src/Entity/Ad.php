@@ -4,6 +4,7 @@
 namespace App\Entity;
 
 use App\Repository\AdRepository;
+use App\Service\constants\AdStatus;
 use DateTime;
 use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -41,7 +42,7 @@ class Ad
     private $flat;
 
     /**
-     * @ORM\Column(name="sqr",type="integer", nullable=false)
+     * @ORM\Column(name="sqr",type="float", nullable=false)
      */
     private $sqr;
 
@@ -73,7 +74,7 @@ class Ad
      */
     private $renter;
     /**
-     * @ORM\Column(name="status",type="string", nullable=false, length=30)
+     * @ORM\Column(name="status",type="integer", nullable=false)
      */
     private $status;
 
@@ -165,10 +166,14 @@ class Ad
 
     public function getStatus(): ?string
     {
-        return $this->status;
+        return  AdStatus::$status_get[$this->status];
+    }
+    public function getStatusNumber(): ?int
+    {
+        return  $this->status;
     }
 
-    public function setStatus(string $status): self
+    public function setStatus(int $status): self
     {
         $this->status = $status;
 
@@ -237,12 +242,12 @@ class Ad
         return $this;
     }
 
-    public function getSqr(): ?int
+    public function getSqr(): ?float
     {
         return $this->sqr;
     }
 
-    public function setSqr(int $sqr): self
+    public function setSqr(float $sqr): self
     {
         $this->sqr = $sqr;
 

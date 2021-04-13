@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\Controller\client;
+namespace App\Controller;
 
 
 use App\Entity\PersonalData;
@@ -47,7 +47,7 @@ class PersonalDataController extends AbstractController
     public function display(int $id_client)
     {
         $personal_data = $this->personalDataRepository->findBy(["client" => $id_client]);
-        return $this->render('client/personalData/personalData.html.twig', [
+        return $this->render('personalData/personalData.html.twig', [
             'personal_data' => $personal_data,
         ]);
     }
@@ -70,7 +70,7 @@ class PersonalDataController extends AbstractController
             $this->entityManager->flush();
             return $this->redirectToRoute('client_personal_data', ['id_client' => $id_client]);
         }
-        return $this->render('client/personalData/personalDataC.html.twig', [
+        return $this->render('personalData/personalDataC.html.twig', [
             'form' => $form->createView(),
         ]);
     }

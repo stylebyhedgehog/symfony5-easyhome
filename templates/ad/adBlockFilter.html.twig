@@ -1,0 +1,31 @@
+{% block body %}
+
+    {# Фильтры #}
+        {# Фильтр по цене #}
+
+    <div class="row">
+        <h5>Стоимость</h5>
+        <div class="input-group mb-3">
+            {{ form_widget(form.min_price) }}
+            {{ form_widget(form.max_price) }}
+        </div>
+    </div>
+
+    <div class="row">
+        <h5>Стоимость</h5>
+        <div class="input-group mb-3">
+            {{ form_widget(form.min_sqr) }}
+            {{ form_widget(form.max_sqr) }}
+        </div>
+    </div>
+
+    {{ form_row(form.search) }}
+    {{ form_end(form) }}
+{#TODO ОТДЕЛЬНЫЙ ФАЙЛ#}
+    <script>
+        $('#ad_filter_sort_param').change(function (){
+            $("#ad_filter_search").click()
+        })
+    </script>
+
+{% endblock %}
