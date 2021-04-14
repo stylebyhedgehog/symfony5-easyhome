@@ -32,7 +32,8 @@ class AdRepository extends ServiceEntityRepository
      */
     public function findByFilters(AdData $adData){
         $query = $this
-            ->createQueryBuilder('a');
+            ->createQueryBuilder('a')
+            ->orderBy('a.update_date', 'DESC');
 
         if(!empty($adData->q)){
             $query= $query
@@ -63,6 +64,7 @@ class AdRepository extends ServiceEntityRepository
                 ->setParameter('max_sqr', $adData->max_sqr);
         }
         if(!empty($adData->sort_param)){
+
             if($adData->sort_param == AdFilter::$new){
                 $query= $query
                     ->orderBy('a.update_date', 'DESC');
