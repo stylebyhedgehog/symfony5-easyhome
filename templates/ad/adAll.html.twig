@@ -1,7 +1,6 @@
 {% extends 'navigation.html.twig' %}
 {% block body %}
     {# TODO ПЕРЕДЕЛАТЬ ЭТОТ УЖАС #}
-    <script src="{{ asset('js/ad/price_pattern.js') }}"></script>
     <style>
         .carousel-item {
             width: 100%;
@@ -29,7 +28,7 @@
     <div class="container">
         {# Поиск #}
         <div class="row ">
-            {{ form_start(form, {'attr': {'id': 'form_person_edit'}}) }}
+            {{ form_start(form) }}
             <div class="input-group mb-3">
                 {{ form_widget(form.q) }}
                 <span class="input-group-text" id="basic-addon2">

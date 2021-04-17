@@ -5,7 +5,7 @@
             border:1px;
         }
     </style>
-    {% if app.user.id != app.request.get('id_client') %}
+    {% if app.user.id != app.request.get('id_user') %}
         {% include 'review/reviewC.html.twig' with {'form': form} %}
     {% endif %}
 
@@ -19,7 +19,7 @@
         {% for review in reviews|reverse %}
                 <div class="review-item card border-0 pt-1 mb-2 me-10 shadow bg-white rounded">
                     <div class="card-header">
-                        <a href="{{ path('client_personal_data',{'id_client':review.rater.id}) }}"
+                        <a href="{{ path('client_personal_data',{'id_user':review.rater.id}) }}"
                            class="">Автор: {{ review.rater}}</a>
                     </div>
                     <div class="p-2">

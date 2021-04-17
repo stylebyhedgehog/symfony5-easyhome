@@ -2,7 +2,7 @@
 {% block active_block %}
     {% form_theme form 'bootstrap_4_layout.html.twig' %}
 
-    {% if app.user.id==app.request.get('id_client') %}
+    {% if app.user.id==app.request.get('id_user') %}
         <div class="container">
             <div class="row justify-content-center">
                 <div class="card bg-light col-4" style="width: 800px">

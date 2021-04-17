@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Data\AdData;
 use App\Entity\Ad;
 use App\Service\constants\AdFilter;
+use App\Service\constants\AdStatus;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -20,8 +21,10 @@ class AdRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Ad::class);
     }
-    public function save(Ad $ad){
-        $em=$this->getEntityManager();
+
+    public function save(Ad $ad)
+    {
+        $em = $this->getEntityManager();
         $em->persist($ad);
         $em->flush();
     }
@@ -30,58 +33,88 @@ class AdRepository extends ServiceEntityRepository
      * @param AdData $adData
      * @return Ad[]
      */
-    public function findByFilters(AdData $adData){
+    public function findByAgentFilters(AdData $adData, int $id_user)
+    {
         $query = $this
             ->createQueryBuilder('a')
+            ->where('a.agent = :id_user')
+            ->setParameter('id_user', $id_user)
+            ->orderBy('a.update_date', 'DESC');
+        if (!empty($adData->choice_status) and $adData->choice_status != 5) {
+            $query = $query
+                ->andWhere('a.status = :status')
+                ->setParameter('status', $adData->choice_status);
+        }
+        if (!empty($adData->sort_param)) {
+
+            if ($adData->sort_param == AdFilter::$new) {
+                $query = $query
+                    ->orderBy('a.update_date', 'DESC');
+            } elseif ($adData->sort_param == AdFilter::$old) {
+                $query = $query
+                    ->orderBy('a.update_date', 'ASC');
+            } else {
+                return null;
+            }
+        }
+        return $query->getQuery()->getResult();
+    }
+
+    /**
+     * @param AdData $adData
+     * @return Ad[]
+     */
+    public function findByClientFilters(AdData $adData)
+    {
+        $query = $this
+            ->createQueryBuilder('a')
+            ->where('a.status = :status')
+            ->setParameter('status', AdStatus::$status_ok)
             ->orderBy('a.update_date', 'DESC');
 
-        if(!empty($adData->q)){
-            $query= $query
+        if (!empty($adData->q)) {
+            $query = $query
                 ->andWhere('a.city LIKE :q')
                 ->setParameter('q', "%{$adData->q}%");
         }
-        if(!empty($adData->min_price)){
-            $query= $query
+        if (!empty($adData->min_price)) {
+            $query = $query
                 ->andWhere('a.price > :min_price')
                 ->setParameter('min_price', $adData->min_price);
 
         }
-        if(!empty($adData->max_price)){
-            $query= $query
+        if (!empty($adData->max_price)) {
+            $query = $query
                 ->andWhere('a.price < :max_price')
                 ->setParameter('max_price', $adData->max_price);
 
-             }
-        if(!empty($adData->min_sqr)){
-            $query= $query
+        }
+        if (!empty($adData->min_sqr)) {
+            $query = $query
                 ->andWhere('a.sqr > :min_sqr')
                 ->setParameter('min_sqr', $adData->min_sqr);
 
         }
-        if(!empty($adData->max_sqr)){
-            $query= $query
+        if (!empty($adData->max_sqr)) {
+            $query = $query
                 ->andWhere('a.sqr <= :max_sqr')
                 ->setParameter('max_sqr', $adData->max_sqr);
         }
-        if(!empty($adData->sort_param)){
+        if (!empty($adData->sort_param)) {
 
-            if($adData->sort_param == AdFilter::$new){
-                $query= $query
+            if ($adData->sort_param == AdFilter::$new) {
+                $query = $query
                     ->orderBy('a.update_date', 'DESC');
-            }
-            elseif($adData->sort_param == AdFilter::$old){
-                $query= $query
+            } elseif ($adData->sort_param == AdFilter::$old) {
+                $query = $query
                     ->orderBy('a.update_date', 'ASC');
-            }
-            elseif ($adData->sort_param == AdFilter::$expensive){
-                $query= $query
+            } elseif ($adData->sort_param == AdFilter::$expensive) {
+                $query = $query
                     ->orderBy('a.price', 'DESC');
-            }
-            elseif ($adData->sort_param == AdFilter::$cheap){
-                $query= $query
+            } elseif ($adData->sort_param == AdFilter::$cheap) {
+                $query = $query
                     ->orderBy('a.price', 'ASC');
-            }
-            else{
+            } else {
                 return null;
             }
         }

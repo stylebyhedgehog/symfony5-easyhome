@@ -1,8 +1,8 @@
 {% extends 'profile.html.twig' %} {% block active_block %}
-    {% if app.user.id==app.request.get('id_client') %}
+    {% if app.user.id==app.request.get('id_user') %}
 
         {% if personal_data is empty %}
-            <a href="{{ path('client_personal_data_create',{'id_client':app.user.id}) }}">
+            <a href="{{ path('client_personal_data_create',{'id_user':app.user.id}) }}">
                 <div class="alert alert-danger" role="alert">
                     Заполните личные данные!
                 </div>

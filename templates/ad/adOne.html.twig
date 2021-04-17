@@ -58,7 +58,7 @@
                 <div class="col md-8">
                     <div class="container">
                         {# Id + дата #}
-                        <div class="row">
+                        <div class="row mb-2">
                             <div class="d-flex justify-content-between">
                                 <small class="">
                                     Объявление №{{ ad.id }}
@@ -69,19 +69,19 @@
                             </div>
                         </div>
                         {# Адрес #}
-                        <div class="row">
+                        <div class="row mb-1">
                             <h5>{{ "г. "~ad.city ~", ул. "~ ad.address ~", "~ ad.sqr }} <span
                                         style="white-space: nowrap;"> м<sup>2</sup></span></h5>
                         </div>
 
-                        <div class="row ">
+                        <div class="row mb-2">
                             <div class="d-flex justify-content-between align-items-center">
                                 {# Владелец #}
                                 <div>
                                     {% if app.user and app.user.id == ad.owner.id %}
                                         <div class="text-info">Это Ваше объявление</div>
                                     {% else %}
-                                        <a href="{{ path('client_personal_data',{'id_client':ad.owner.id}) }}"
+                                        <a href="{{ path('client_personal_data',{'id_user':ad.owner.id}) }}"
                                            class="">Разместил: {{ ad.owner }}</a>
                                     {% endif %}
                                 </div>
@@ -93,11 +93,11 @@
                                         {% elseif is_granted('ROLE_AGENT') %}
                                             {{ form_start(form) }}
                                             {{ form_widget(form.status) }}
-                                            {{ form_widget(form.save) }}
+                                            {{ form_widget(form.save, {'attr':{'hidden':'true'}}) }}
                                             {{ form_end(form) }}
                                         {% else %}
-                                            {% if current_template == "client_favorite_all" or ad.id in favorites_id %}
-                                                <a href="{{ path('client_favorite_remove', {'id_ad': ad.id, 'id_client': app.user.id, 'current_template':current_template}) }}">
+                                            {% if ad in  app.user.favoriteAds %}
+                                                <a href="{{ path('client_favorite_remove', {'id_ad': ad.id, 'id_user': app.user.id, 'current_template':current_template}) }}">
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="16"
                                                          height="16" fill="currentColor"
                                                          class="bi bi-heart-fill" viewBox="0 0 16 16">
@@ -106,7 +106,7 @@
                                                     </svg>
                                                 </a>
                                             {% else %}
-                                                <a href="{{ path('client_favorite_create', {'id_ad': ad.id, 'id_client': app.user.id, 'current_template':current_template }) }}">
+                                                <a href="{{ path('client_favorite_create', {'id_ad': ad.id, 'id_user': app.user.id, 'current_template':current_template }) }}">
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="16"
                                                          height="16" fill="currentColor" class="bi bi-heart"
                                                          viewBox="0 0 16 16">
@@ -129,13 +129,19 @@
                             </div>
                         </div>
                         {# Описание #}
-                        <div class="row">
-                            <div class="card">{{ ad.description }}</div> </div>
+                        <div class="row border b-1">
+                            {{ ad.description }}</div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    {#TODO ОТДЕЛЬНЫЙ ФАЙЛ#}
+    <script>
+        $('#form_status').change(function (){
+            $("#form_save").click()
+        })
 
+    </script>
 
 {% endblock %}

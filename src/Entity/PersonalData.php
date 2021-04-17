@@ -36,11 +36,15 @@ class PersonalData
     private $passport;
 
     /**
-     * One Client has One PD.
      * @OneToOne(targetEntity="Client", inversedBy="personal_data")
      * @JoinColumn(name="client_id", unique=true, referencedColumnName="id")
      */
     private $client;
+
+    /**
+     * @ORM\Column(type="integer", nullable=false)
+     */
+    private $status;
 
     public function getId(): ?int
     {
@@ -91,6 +95,18 @@ class PersonalData
     public function setClient(?Client $client): self
     {
         $this->client = $client;
+
+        return $this;
+    }
+
+    public function getStatus(): ?int
+    {
+        return $this->status;
+    }
+
+    public function setStatus(int $status): self
+    {
+        $this->status = $status;
 
         return $this;
     }

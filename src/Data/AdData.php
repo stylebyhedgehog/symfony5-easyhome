@@ -11,8 +11,6 @@ class AdData
      */
     public $q;
 
-
-
     /**
      * @var integer
      */
@@ -38,6 +36,10 @@ class AdData
      */
     public $max_sqr;
 
+    /**
+     * @var float|null
+     */
+    public $choice_status;
 
 
 }

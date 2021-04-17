@@ -1,5 +1,5 @@
 {% extends 'navigation.html.twig' %} {% block body %}
-{#    <script src="{{ asset('js/ad/price_pattern.js') }}"></script>#}
+
     <style>
         .carousel-item {
             width: 100%;
@@ -37,31 +37,41 @@
                         <div class="nav flex-column">
                             <div class="nav-item">
                                 <a class="nav-link nav-profile"
-                                   href="{{ path('client_personal_data', {'id_client': app.request.get('id_client')}) }}">
+                                   href="{{ path('client_personal_data', {'id_user': app.request.get('id_user')}) }}">
                                     Личные данные
                                 </a>
                             </div>
                             <div class="nav-item">
                                 <a class="nav-link nav-profile"
-                                   href="{{ path('client_review_all',{'id_client':app.request.get('id_client')}) }}">
+                                   href="{{ path('client_review_all',{'id_user':app.request.get('id_user')}) }}">
                                     Отзывы
                                 </a>
                             </div>
-                            {% if app.user.id==app.request.get('id_client') %}
+                            {% if app.user.id==app.request.get('id_user') %}
+                                {% if is_granted('ROLE_AGENT') %}
+                                    <div class="nav-item">
+                                        <a class="nav-link nav-profile"
+                                           href="{{ path('agent_ad_all',{'id_user': app.user.id}) }}">
+                                            Прикрепленные объявления
+                                        </a>
+                                    </div>
+                                {% else %}
+                                    <div class="nav-item">
+                                        <a class="nav-link nav-profile"
+                                           href="{{ path('client_ad_own_all',{'id_user': app.user.id}) }}">
+                                            Созданные объявления
+                                        </a>
+                                    </div>
+                                    <div class="nav-item">
+                                        <a class="nav-link nav-profile"
+                                           href="{{ path('client_favorite_all',{'id_user':app.user.id}) }}">
+                                            Избранное
+                                        </a>
+                                    </div>
+                                {% endif %}
 
-                                <div class="nav-item">
-                                    <a class="nav-link nav-profile"
-                                       href="{{ path('client_ad_own_all',{'id_client': app.user.id}) }}">
-                                        Созданные объявления
-                                    </a>
-                                </div>
-                                <div class="nav-item">
-                                    <a class="nav-link nav-profile"
-                                       href="{{ path('client_favorite_all',{'id_client':app.user.id}) }}">
-                                        Избранное
-                                    </a>
-                                </div>
                             {% endif %}
+
 
                         </div>
                     </div>
@@ -70,7 +80,13 @@
                         <div class="row mb-2" >
                             <div class="col-4">
                                 <small >
-                                    Пользователь №{{ app.user.id }}
+                                    {% if is_granted('ROLE_AGENT') %}
+                                        Агент №{{ app.user.id }}
+
+                                    {% else %}
+                                            Пользователь №{{ app.user.id }}
+
+                                    {% endif %}
                                 </small>
                             </div>
                         </div>

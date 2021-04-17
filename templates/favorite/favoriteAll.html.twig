@@ -1,5 +1,5 @@
 {% extends 'profile.html.twig' %} {% block active_block %}
-    {% if app.user.id==app.request.get('id_client') %}
+    {% if app.user.id==app.request.get('id_user') %}
         {% if favorites is empty %}
             <div class="alert alert-secondary" role="alert">
                 Список избранное пуст

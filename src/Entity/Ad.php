@@ -68,11 +68,7 @@ class Ad
      */
     private $agent;
 
-    /**
-     * @ManyToOne(targetEntity="Client", inversedBy="rented_ads")
-     * @JoinColumn(name="renter_id", referencedColumnName="id", nullable=true)
-     */
-    private $renter;
+
     /**
      * @ORM\Column(name="status",type="integer", nullable=false)
      */
@@ -94,9 +90,15 @@ class Ad
      */
     private $images;
 
+    /**
+     * @ORM\OneToMany(targetEntity="Application", mappedBy="ad")
+     */
+    private $applications;
+
     public function __construct()
     {
         $this->images = new ArrayCollection();
+        $this->applications = new ArrayCollection();
     }
     public function getId(): ?int
     {
@@ -206,18 +208,6 @@ class Ad
         return $this;
     }
 
-    public function getRenter(): ?Client
-    {
-        return $this->renter;
-    }
-
-    public function setRenter(?Client $renter): self
-    {
-        $this->renter = $renter;
-
-        return $this;
-    }
-
     public function getCreateDate(): ?\DateTimeInterface
     {
         return $this->create_date;
@@ -278,6 +268,36 @@ class Ad
             // set the owning side to null (unless already changed)
             if ($image->getAd() === $this) {
                 $image->setAd(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Application[]
+     */
+    public function getApplications(): Collection
+    {
+        return $this->applications;
+    }
+
+    public function addApplication(Application $application): self
+    {
+        if (!$this->applications->contains($application)) {
+            $this->applications[] = $application;
+            $application->setAd($this);
+        }
+
+        return $this;
+    }
+
+    public function removeApplication(Application $application): self
+    {
+        if ($this->applications->removeElement($application)) {
+            // set the owning side to null (unless already changed)
+            if ($application->getAd() === $this) {
+                $application->setAd(null);
             }
         }
 

@@ -49,7 +49,7 @@ class AdController extends AbstractController
         $data= new AdData();
         $form= $this->createForm(AdFilterType::class,$data);
         $form->handleRequest($request);
-        $ads =$this->adRepository->findByFilters($data);
+        $ads =$this->adRepository->findByClientFilters($data);
 
         return $this->render('ad/adAll.html.twig', [
             'ads' => $ads,
@@ -66,42 +66,33 @@ class AdController extends AbstractController
     {
         $ad = $this->adRepository->find($request->get("id_ad"));
         $user = $this->getUser();
-        $favorites_id = [];
-        if ($user) {
-            $favorites = $this->clientRepository->find($user)->getFavoriteAds();
-            foreach ($favorites as $favorite) {
-                array_push($favorites_id, $favorite->getAd()->getId());
-            }
-        }
-
         return $this->render('ad/adOne.html.twig', [
             'ad' => $ad,
-            'favorites_id' => $favorites_id,
             'current_template' => 'general_ad_one'
         ]);
     }
 
     /**
-     * @Route ("/agent/{id_agent}/ads/controlled/",name="agent_ad_all")
+     * @Route ("/agent/{id_user}/ads/controlled/",name="agent_ad_all")
      * @param Request $request
-     * @param int $id_agent
+     * @param int $id_user
      * @return Response
      */
-    public function agent_ad_all(Request $request, int $id_agent)
+    public function agent_ad_all(Request $request, int $id_user)
     {
-        $agent = $this->clientRepository->find($id_agent);
-        if ($this->getUser() != $agent) {
-            throw $this->createAccessDeniedException('Ошибка доступа');
-        }
+        $data= new AdData();
+        $form= $this->createForm(AdFilterType::class,$data,['mode'=>"agent"]);
+        $form->handleRequest($request);
+        $ads =$this->adRepository->findByAgentFilters($data, $id_user);
 
-        $ads = $agent->getControlledAds();
-        return $this->render('ad/adControlledAll.html.twig', [
+        return $this->render('ad/adAgentAll.html.twig', [
             'ads' => $ads,
+            'form'=>$form->createView()
         ]);
     }
 
     /**
-     * @Route("/agent/{id_agent}/ads/controlled/{id_ad}", name="agent_ad_one")
+     * @Route("/agent/{id_user}/ads/controlled/{id_ad}", name="agent_ad_one")
      * @param Request $request
      * @return Response
      */
@@ -125,6 +116,7 @@ class AdController extends AbstractController
         $form = $this->createFormBuilder($ad)
             ->add('status', ChoiceType::class,
                 ['choices' => AdStatus::$status,
+                    'attr'=>['class'=>'btn btn-secondary dropdown-toggle shadow-none'],
                     'data' => $ad->getStatusNumber()])
             ->add('save', SubmitType::class)
             ->getForm();
@@ -138,14 +130,14 @@ class AdController extends AbstractController
     }
 
     /**
-     * @Route ("/client/{id_client}/ads/own_ads/",name="client_ad_own_all")
+     * @Route ("/client/{id_user}/ads/own_ads/",name="client_ad_own_all")
      * @param Request $request
-     * @param int $id_client
+     * @param int $id_user
      * @return Response
      */
-    public function client_ad_own_all(Request $request, int $id_client)
+    public function client_ad_own_all(Request $request, int $id_user)
     {
-        $client = $this->clientRepository->find($id_client);
+        $client = $this->clientRepository->find($id_user);
         if ($this->getUser() != $client) {
             throw $this->createAccessDeniedException('Ошибка доступа');
         }
@@ -157,7 +149,7 @@ class AdController extends AbstractController
     }
 
     /**
-     * @Route("/client/{id_client}/ads/own/create", name="client_ad_own_create")
+     * @Route("/client/{id_user}/ads/own/create", name="client_ad_own_create")
      * @param Request $request
      * @param AdAgentService $adService
      * @return Response
@@ -170,7 +162,7 @@ class AdController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
 
-            $owner = $this->clientRepository->find($request->get("id_client"));
+            $owner = $this->clientRepository->find($request->get("id_user"));
             $ad->setOwner($owner);
             $current_time = new DateTime();
             //TODO РЕАЛИЗОВАТЬ
@@ -196,7 +188,7 @@ class AdController extends AbstractController
             }
             $this->entityManager->persist($ad);
             $this->entityManager->flush();
-            return $this->redirectToRoute('client_ad_own_all', ['id_client' => $request->get("id_client")]);
+            return $this->redirectToRoute('client_ad_own_all', ['id_user' => $request->get("id_user")]);
         }
         return $this->render('ad/adOwnC.html.twig', [
             'form' => $form->createView(),

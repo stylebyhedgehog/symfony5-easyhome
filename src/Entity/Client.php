@@ -47,15 +47,11 @@ class Client implements UserInterface
      */
     private $controlled_ads;
 
-    /**
-     * @ORM\OneToMany(targetEntity="Ad", mappedBy="renter")
-     */
-    private $rented_ads;
 
     /**
      * @ORM\OneToMany(targetEntity="Favorite", mappedBy="client")
      */
-    private $favorite_ads;
+    private $favorites;
 
     /**
      * @ORM\OneToMany(targetEntity="Review", mappedBy="rater")
@@ -68,6 +64,10 @@ class Client implements UserInterface
     private $client_reviews;
 
     /**
+     * @ORM\OneToMany(targetEntity="Application", mappedBy="client")
+     */
+    private $applications;
+    /**
      * @OneToOne(targetEntity="PersonalData", mappedBy="client")
      */
     private $personal_data;
@@ -75,10 +75,11 @@ class Client implements UserInterface
 
         $this->controlled_ads = new ArrayCollection();
         $this->posted_ads = new ArrayCollection();
-        $this->rented_ads = new ArrayCollection();
         $this->favorite_ads = new ArrayCollection();
         $this->posted_reviews = new ArrayCollection();
         $this->client_reviews = new ArrayCollection();
+        $this->favorites = new ArrayCollection();
+        $this->applications = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -235,69 +236,20 @@ class Client implements UserInterface
         return $this->getUsername();
     }
 
+
+
     /**
      * @return Collection|Ad[]
-     */
-    public function getRentedAds(): Collection
-    {
-        return $this->rented_ads;
-    }
-
-    public function addRentedAd(Ad $rentedAd): self
-    {
-        if (!$this->rented_ads->contains($rentedAd)) {
-            $this->rented_ads[] = $rentedAd;
-            $rentedAd->setRenter($this);
-        }
-
-        return $this;
-    }
-
-    public function removeRentedAd(Ad $rentedAd): self
-    {
-        if ($this->rented_ads->removeElement($rentedAd)) {
-            // set the owning side to null (unless already changed)
-            if ($rentedAd->getRenter() === $this) {
-                $rentedAd->setRenter(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|Favorite[]
      */
     public function getFavoriteAds(): Collection
     {
         $ads_collection=new ArrayCollection();
-        foreach ($this->favorite_ads as $favorite_ad){
-            $ads_collection->add( $favorite_ad->getAd());
+        foreach ($this->favorites as $favorite){
+            $ads_collection->add( $favorite->getAd());
         }
         return $ads_collection;
     }
-
-    public function addFavoriteAd(Favorite $favoriteAd): self
-    {
-        if (!$this->favorite_ads->contains($favoriteAd)) {
-            $this->favorite_ads[] = $favoriteAd;
-            $favoriteAd->setClient($this);
-        }
-
-        return $this;
-    }
-
-    public function removeFavoriteAd(Favorite $favoriteAd): self
-    {
-        if ($this->favorite_ads->removeElement($favoriteAd)) {
-            // set the owning side to null (unless already changed)
-            if ($favoriteAd->getClient() === $this) {
-                $favoriteAd->setClient(null);
-            }
-        }
-
-        return $this;
-    }
+    
 
     /**
      * @return Collection|Review[]
@@ -377,6 +329,66 @@ class Client implements UserInterface
         }
 
         $this->personal_data = $personal_data;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Favorite[]
+     */
+    public function getFavorites(): Collection
+    {
+        return $this->favorites;
+    }
+
+    public function addFavorite(Favorite $favorite): self
+    {
+        if (!$this->favorites->contains($favorite)) {
+            $this->favorites[] = $favorite;
+            $favorite->setClient($this);
+        }
+
+        return $this;
+    }
+
+    public function removeFavorite(Favorite $favorite): self
+    {
+        if ($this->favorites->removeElement($favorite)) {
+            // set the owning side to null (unless already changed)
+            if ($favorite->getClient() === $this) {
+                $favorite->setClient(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Application[]
+     */
+    public function getApplications(): Collection
+    {
+        return $this->applications;
+    }
+
+    public function addApplication(Application $application): self
+    {
+        if (!$this->applications->contains($application)) {
+            $this->applications[] = $application;
+            $application->setClient($this);
+        }
+
+        return $this;
+    }
+
+    public function removeApplication(Application $application): self
+    {
+        if ($this->applications->removeElement($application)) {
+            // set the owning side to null (unless already changed)
+            if ($application->getClient() === $this) {
+                $application->setClient(null);
+            }
+        }
 
         return $this;
     }

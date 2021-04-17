@@ -15,7 +15,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @Route ("/client/{id_client}/favorite")
+ * @Route ("/client/{id_user}/favorite")
  */
 class FavoriteController extends AbstractController
 {
@@ -62,7 +62,7 @@ class FavoriteController extends AbstractController
     public function create(Request $request){
         //TODO РАЗРЕШИТЬ ТОЛЬКО ДЛЯ ХОЗЯИНА
         $favorite=new Favorite();
-        $favorite->setClient($this->clientRepository->find($request->get("id_client")));
+        $favorite->setClient($this->clientRepository->find($request->get("id_user")));
         $favorite->setAd($this->adRepository->find($request->get("id_ad")));
         $this->entityManager->persist($favorite);
         $this->entityManager->flush();
@@ -76,10 +76,10 @@ class FavoriteController extends AbstractController
      * @return Response
      */
     public function remove(Request $request){
-        $favorite=$this->favoriteRepository->findBy(["ad"=>$request->get("id_ad"),"client"=>$request->get("id_client")]);
+        $favorite=$this->favoriteRepository->findBy(["ad"=>$request->get("id_ad"),"client"=>$request->get("id_user")]);
         $this->entityManager->remove($favorite[0]);
         $this->entityManager->flush();
         //TODO В ШАБЛОН СО ВСЕМИ ОБЪЯВЛЕНИЯМИ НЕ ДОЛЖЕН УХОДИТЬ id_ad
-        return $this->redirectToRoute($request->get('current_template'),["id_ad"=>$request->get("id_ad"),"id_client"=>$request->get("id_client")]);
+        return $this->redirectToRoute($request->get('current_template'),["id_ad"=>$request->get("id_ad"),"id_user"=>$request->get("id_user")]);
     }
 }

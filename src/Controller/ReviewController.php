@@ -17,7 +17,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Security;
 
 /**
- * @Route ("/client/{id_client}/review")
+ * @Route ("/client/{id_user}/review")
  */
 class ReviewController extends AbstractController
 {
@@ -39,15 +39,15 @@ class ReviewController extends AbstractController
 
     /**
      * @Route ("/", name="client_review_all")
-     * @param int $id_client
+     * @param int $id_user
      * @param Request $request
      * @return Response
      */
-    public function all(int $id_client,Request $request){
-        $client=$this->clientRepository->find($id_client);
+    public function all(int $id_user,Request $request){
+        $client=$this->clientRepository->find($id_user);
         $reviews=$client->getClientReviews();
         //form
-        $form=$this->create($id_client,$request);
+        $form=$this->create($id_user,$request);
 
         return $this->render('review/review.html.twig', [
             'reviews' =>$reviews,
@@ -57,17 +57,17 @@ class ReviewController extends AbstractController
 
 
     /**
-     * @param int $id_client
+     * @param int $id_user
      * @param Request $request
      * @return \Symfony\Component\Form\FormInterface
      */
-    public function create(int $id_client,Request $request){
+    public function create(int $id_user,Request $request){
         $review = new Review();
         $form=$this->createForm(ReviewType::class,$review);
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $review->setRater($this->getUser());
-            $review->setClient($this->clientRepository->find($id_client));
+            $review->setClient($this->clientRepository->find($id_user));
             $this->entityManager->persist($review);
             $this->entityManager->flush();
         }
