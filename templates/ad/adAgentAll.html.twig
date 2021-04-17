@@ -1,0 +1,36 @@
+{% extends 'profile.html.twig' %} {% block active_block %}
+
+    <div class="d-flex justify-content-end py-2">
+        {{ form_start(form) }}
+        {{ form_widget(form.choice_status) }}
+        {{ form_widget(form.sort_param) }}
+        {{ form_widget(form.search,{'attr':{'hidden':'true'}}) }}
+        {{ form_end(form , {'render_rest': false}) }}
+    </div>
+    {% if app.user.controlledAds is empty%}
+        Нет прикрепленных объявлений
+    {% else %}
+        {% if ads is empty %}
+            Ничего не найдено
+        {% else %}
+
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-1">
+                {% for ad in ads %}
+                    {% include 'ad/adAllEl.html.twig' with {'ad': ad} %}
+
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endif %}
+
+
+    {#TODO ОТДЕЛЬНЫЙ ФАЙЛ#}
+    <script>
+        $('#ad_filter_sort_param').change(function (){
+            $("#ad_filter_search").click()
+        })
+        $('#ad_filter_choice_status').change(function (){
+            $("#ad_filter_search").click()
+        })
+    </script>
+{% endblock %}
