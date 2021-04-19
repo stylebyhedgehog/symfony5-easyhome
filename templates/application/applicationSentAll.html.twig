@@ -1,0 +1,45 @@
+{% extends 'profile.html.twig' %} {% block active_block %}
+    {% if app.user.id==app.request.get('id_user') %}
+        <div class="d-flex justify-content-end py-2">
+            {{ form_start(form) }}
+            {{ form_widget(form.choice_status) }}
+            {{ form_widget(form.sort_param) }}
+            {{ form_widget(form.search,{'attr':{'hidden':'true'}}) }}
+            {{ form_end(form , {'render_rest': false}) }}
+        </div>
+        {% if applications is empty %}
+                <div class="alert alert-info" role="alert">
+                    Вы не создали ни одной заявки
+                </div>
+        {% else %}
+            {% for application in applications %}
+                <div class="row border mb-2">
+                    <div class="col-6">
+                        <a href="{{ path('general_ad_one', {'id_ad': application.ad.id}) }}">
+                            {{ application.ad.city ~", "~ application.ad.address ~", "~ application.ad.sqr }}
+                            <span style="white-space: nowrap;"> м<sup>2</sup></span>
+                        </a>
+                    </div>
+                    <div class="col-3">
+                        {{ application.status }}
+                    </div>
+                    <div class="col-3">
+                        {{ application.createDate|date("d.m.Y H:i") }}
+                    </div>
+                </div>
+
+            {% endfor %}
+        {% endif %}
+
+    {% else %}
+        Ошибка доступа
+    {% endif %}
+    <script>
+        $('#application_filter_sort_param').change(function () {
+            $("#application_filter_search").click()
+        })
+        $('#application_filter_choice_status').change(function () {
+            $("#application_filter_search").click()
+        })
+    </script>
+{% endblock %}

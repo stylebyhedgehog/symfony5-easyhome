@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\ApplicationRepository;
+use App\Service\constants\ApplicationStatus;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
@@ -20,11 +21,22 @@ class Application
     private $id;
 
     /**
-     * @ManyToOne(targetEntity="Client", inversedBy="applications")
-     * @JoinColumn(name="client_id", referencedColumnName="id",onDelete="CASCADE")
+     * @ManyToOne(targetEntity="Client", inversedBy="applications_sent")
+     * @JoinColumn(name="sender_id", referencedColumnName="id")
      */
-    private $client;
+    private $sender;
 
+    /**
+     * @ManyToOne(targetEntity="Client", inversedBy="applications_incoming")
+     * @JoinColumn(name="owner_id", referencedColumnName="id")
+     */
+    private $owner;
+
+    /**
+     * @ManyToOne(targetEntity="Client", inversedBy="applications_controlled")
+     * @JoinColumn(name="agent_id", referencedColumnName="id")
+     */
+    private $agent;
     /**
      * @ManyToOne(targetEntity="Ad", inversedBy="applications")
      * @JoinColumn(name="ad_id", referencedColumnName="id",onDelete="CASCADE")
@@ -46,9 +58,13 @@ class Application
         return $this->id;
     }
 
-    public function getStatus(): ?int
+    public function getStatusNumber(): ?int
     {
         return $this->status;
+    }
+    public function getStatus(): ?string
+    {
+        return ApplicationStatus::$status_get[$this->status];
     }
 
     public function setStatus(int $status): self
@@ -70,17 +86,7 @@ class Application
         return $this;
     }
 
-    public function getClient(): ?Client
-    {
-        return $this->client;
-    }
-
-    public function setClient(?Client $client): self
-    {
-        $this->client = $client;
-
-        return $this;
-    }
+  
 
     public function getAd(): ?Ad
     {
@@ -90,6 +96,42 @@ class Application
     public function setAd(?Ad $ad): self
     {
         $this->ad = $ad;
+
+        return $this;
+    }
+
+    public function getSender(): ?Client
+    {
+        return $this->sender;
+    }
+
+    public function setSender(?Client $sender): self
+    {
+        $this->sender = $sender;
+
+        return $this;
+    }
+
+    public function getOwner(): ?Client
+    {
+        return $this->owner;
+    }
+
+    public function setOwner(?Client $owner): self
+    {
+        $this->owner = $owner;
+
+        return $this;
+    }
+
+    public function getAgent(): ?Client
+    {
+        return $this->agent;
+    }
+
+    public function setAgent(?Client $agent): self
+    {
+        $this->agent = $agent;
 
         return $this;
     }

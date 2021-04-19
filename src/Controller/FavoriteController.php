@@ -66,7 +66,7 @@ class FavoriteController extends AbstractController
         $favorite->setAd($this->adRepository->find($request->get("id_ad")));
         $this->entityManager->persist($favorite);
         $this->entityManager->flush();
-        //TODO В ШАБЛОН СО ВСЕМИ ОБЪЯВЛЕНИЯМИ НЕ ДОЛЖЕН УХОДИТЬ id_ad
+        //TODO В ШАБЛОН СО ВСЕМИ ОБЪЯВЛЕНИЯМИ НЕ ДОЛЖЕН УХОДИТЬ id_ad +СДЕЛАТЬ ФОРМОЙ
         return $this->redirectToRoute($request->get('current_template'),["id_ad"=>$request->get("id_ad")]);
     }
 
@@ -76,8 +76,8 @@ class FavoriteController extends AbstractController
      * @return Response
      */
     public function remove(Request $request){
-        $favorite=$this->favoriteRepository->findBy(["ad"=>$request->get("id_ad"),"client"=>$request->get("id_user")]);
-        $this->entityManager->remove($favorite[0]);
+        $favorite=$this->favoriteRepository->findOneBy(["ad"=>$request->get("id_ad"),"client"=>$request->get("id_user")]);
+        $this->entityManager->remove($favorite);
         $this->entityManager->flush();
         //TODO В ШАБЛОН СО ВСЕМИ ОБЪЯВЛЕНИЯМИ НЕ ДОЛЖЕН УХОДИТЬ id_ad
         return $this->redirectToRoute($request->get('current_template'),["id_ad"=>$request->get("id_ad"),"id_user"=>$request->get("id_user")]);

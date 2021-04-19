@@ -64,22 +64,35 @@ class Client implements UserInterface
     private $client_reviews;
 
     /**
-     * @ORM\OneToMany(targetEntity="Application", mappedBy="client")
+     * @ORM\OneToMany(targetEntity="Application", mappedBy="sender")
      */
-    private $applications;
+    private $applications_sent;
+
+    /**
+     * @ORM\OneToMany(targetEntity="Application", mappedBy="owner")
+     */
+    private $applications_incoming;
+
+    /**
+     * @ORM\OneToMany(targetEntity="Application", mappedBy="agent")
+     */
+    private $applications_controlled;
+
     /**
      * @OneToOne(targetEntity="PersonalData", mappedBy="client")
      */
     private $personal_data;
+
     public function __construct() {
 
         $this->controlled_ads = new ArrayCollection();
         $this->posted_ads = new ArrayCollection();
-        $this->favorite_ads = new ArrayCollection();
         $this->posted_reviews = new ArrayCollection();
         $this->client_reviews = new ArrayCollection();
         $this->favorites = new ArrayCollection();
-        $this->applications = new ArrayCollection();
+        $this->applications_sent = new ArrayCollection();
+        $this->applications_incoming = new ArrayCollection();
+        $this->applications_controlled = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -117,7 +130,6 @@ class Client implements UserInterface
         $roles = $this->roles;
         // guarantee every user at least has ROLE_USER
         $roles[] = 'ROLE_USER';
-
         return array_unique($roles);
     }
 
@@ -125,7 +137,6 @@ class Client implements UserInterface
     public function setRoles(array $roles): self
     {
         $this->roles = $roles;
-
         return $this;
     }
     public function addRoles(string $role): self
@@ -133,7 +144,6 @@ class Client implements UserInterface
         $current_roles=$this->getRoles();
         array_push($current_roles, $role);
         $this->setRoles($current_roles);
-
         return $this;
     }
 
@@ -186,7 +196,6 @@ class Client implements UserInterface
             $this->posted_ads[] = $postedAd;
             $postedAd->setOwner($this);
         }
-
         return $this;
     }
 
@@ -198,7 +207,6 @@ class Client implements UserInterface
                 $postedAd->setOwner(null);
             }
         }
-
         return $this;
     }
 
@@ -216,7 +224,6 @@ class Client implements UserInterface
             $this->controlled_ads[] = $controlledAd;
             $controlledAd->setAgent($this);
         }
-
         return $this;
     }
 
@@ -228,15 +235,12 @@ class Client implements UserInterface
                 $controlledAd->setAgent(null);
             }
         }
-
         return $this;
     }
     public function __toString()
     {
         return $this->getUsername();
     }
-
-
 
     /**
      * @return Collection|Ad[]
@@ -366,32 +370,107 @@ class Client implements UserInterface
     /**
      * @return Collection|Application[]
      */
-    public function getApplications(): Collection
+    public function getApplicationsSent(): Collection
     {
-        return $this->applications;
+        return $this->applications_sent;
     }
 
-    public function addApplication(Application $application): self
+    /**
+     * @return Collection|Ad[]
+     */
+    public function getApplicationsSentAds(): Collection
     {
-        if (!$this->applications->contains($application)) {
-            $this->applications[] = $application;
-            $application->setClient($this);
+        $ads=new ArrayCollection();
+        foreach ($this->applications_sent as $application){
+            $ads->add($application->getAd());
+        }
+        return $ads;
+    }
+
+    public function addApplicationsSent(Application $applicationsSent): self
+    {
+        if (!$this->applications_sent->contains($applicationsSent)) {
+            $this->applications_sent[] = $applicationsSent;
+            $applicationsSent->setSender($this);
         }
 
         return $this;
     }
 
-    public function removeApplication(Application $application): self
+    public function removeApplicationsSent(Application $applicationsSent): self
     {
-        if ($this->applications->removeElement($application)) {
+        if ($this->applications_sent->removeElement($applicationsSent)) {
             // set the owning side to null (unless already changed)
-            if ($application->getClient() === $this) {
-                $application->setClient(null);
+            if ($applicationsSent->getSender() === $this) {
+                $applicationsSent->setSender(null);
             }
         }
 
         return $this;
     }
+
+    /**
+     * @return Collection|Application[]
+     */
+    public function getApplicationsIncoming(): Collection
+    {
+        return $this->applications_incoming;
+    }
+
+    public function addApplicationsIncoming(Application $applicationsIncoming): self
+    {
+        if (!$this->applications_incoming->contains($applicationsIncoming)) {
+            $this->applications_incoming[] = $applicationsIncoming;
+            $applicationsIncoming->setOwner($this);
+        }
+
+        return $this;
+    }
+
+    public function removeApplicationsIncoming(Application $applicationsIncoming): self
+    {
+        if ($this->applications_incoming->removeElement($applicationsIncoming)) {
+            // set the owning side to null (unless already changed)
+            if ($applicationsIncoming->getOwner() === $this) {
+                $applicationsIncoming->setOwner(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Application[]
+     */
+    public function getApplicationsControlled(): Collection
+    {
+        return $this->applications_controlled;
+    }
+
+    public function addApplicationsControlled(Application $applicationsControlled): self
+    {
+        if (!$this->applications_controlled->contains($applicationsControlled)) {
+            $this->applications_controlled[] = $applicationsControlled;
+            $applicationsControlled->setAgent($this);
+        }
+        return $this;
+    }
+
+    public function removeApplicationsControlled(Application $applicationsControlled): self
+    {
+        if ($this->applications_controlled->removeElement($applicationsControlled)) {
+            // set the owning side to null (unless already changed)
+            if ($applicationsControlled->getAgent() === $this) {
+                $applicationsControlled->setAgent(null);
+            }
+        }
+
+        return $this;
+    }
+
+ 
+
+
 
 
 }

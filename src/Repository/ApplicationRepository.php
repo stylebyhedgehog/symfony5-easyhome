@@ -2,7 +2,9 @@
 
 namespace App\Repository;
 
+use App\Data\ApplicationData;
 use App\Entity\Application;
+use App\Service\constants\ApplicationFilter;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -17,6 +19,38 @@ class ApplicationRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Application::class);
+    }
+
+    /**
+     * @param ApplicationData $applicationData
+     * @return Application[]
+     */
+    public function findByFiltersAndAccessType(ApplicationData $applicationData, int $id_user,string $acces)
+    {
+        $query = $this
+            ->createQueryBuilder('a')
+            ->where('a.'.$acces.'= :id_user')
+            ->setParameter('id_user', $id_user)
+            ->orderBy('a.create_date', 'DESC');
+
+        if (!empty($applicationData->choice_status) and $applicationData->choice_status != 7) {
+            $query = $query
+                ->andWhere('a.status = :status')
+                ->setParameter('status', $applicationData->choice_status);
+        }
+        if (!empty($applicationData->sort_param)) {
+
+            if ($applicationData->sort_param == ApplicationFilter::$new) {
+                $query = $query
+                    ->orderBy('a.create_date', 'DESC');
+            } elseif ($applicationData->sort_param == ApplicationFilter::$old) {
+                $query = $query
+                    ->orderBy('a.create_date', 'ASC');
+            } else {
+                return null;
+            }
+        }
+        return $query->getQuery()->getResult();
     }
 
     // /**

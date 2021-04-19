@@ -37,7 +37,7 @@ class AdData
     public $max_sqr;
 
     /**
-     * @var float|null
+     * @var integer|null
      */
     public $choice_status;
 

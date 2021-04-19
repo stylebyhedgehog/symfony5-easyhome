@@ -12,7 +12,7 @@ use App\Repository\AdRepository;
 use App\Repository\ClientRepository;
 use App\Repository\FavoriteRepository;
 use App\Service\AdAgentService;
-use App\Service\AdFilter;
+
 use App\Service\constants\AdStatus;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
@@ -91,6 +91,7 @@ class AdController extends AbstractController
         ]);
     }
 
+    //TODO В ОДИН ЭКШОН
     /**
      * @Route("/agent/{id_user}/ads/controlled/{id_ad}", name="agent_ad_one")
      * @param Request $request
@@ -130,7 +131,7 @@ class AdController extends AbstractController
     }
 
     /**
-     * @Route ("/client/{id_user}/ads/own_ads/",name="client_ad_own_all")
+     * @Route ("/client/{id_user}/ads/own/",name="client_ad_own_all")
      * @param Request $request
      * @param int $id_user
      * @return Response
@@ -138,9 +139,7 @@ class AdController extends AbstractController
     public function client_ad_own_all(Request $request, int $id_user)
     {
         $client = $this->clientRepository->find($id_user);
-        if ($this->getUser() != $client) {
-            throw $this->createAccessDeniedException('Ошибка доступа');
-        }
+      
 
         $ads = $client->getPostedAds();
         return $this->render('ad/adOwnAll.html.twig', [

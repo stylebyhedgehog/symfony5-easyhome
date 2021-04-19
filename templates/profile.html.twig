@@ -55,11 +55,30 @@
                                             Прикрепленные объявления
                                         </a>
                                     </div>
+                                    <div class="nav-item">
+                                        <a class="nav-link nav-profile"
+                                           href="{{ path('agent_application_controlled',{'id_user':app.user.id}) }}">
+                                            Заявки
+                                        </a>
+                                    </div>
                                 {% else %}
                                     <div class="nav-item">
+{#                                        TODO ДОБАВИТЬ ФИЛЬТРЫ#}
                                         <a class="nav-link nav-profile"
                                            href="{{ path('client_ad_own_all',{'id_user': app.user.id}) }}">
                                             Созданные объявления
+                                        </a>
+                                    </div>
+                                    <div class="nav-item">
+                                        <a class="nav-link nav-profile"
+                                           href="{{ path('client_application_incoming_all',{'id_user':app.user.id}) }}">
+                                            Входящие заявки
+                                        </a>
+                                    </div>
+                                    <div class="nav-item">
+                                        <a class="nav-link nav-profile"
+                                           href="{{ path('client_application_sent_all',{'id_user':app.user.id}) }}">
+                                            Созданные заявки
                                         </a>
                                     </div>
                                     <div class="nav-item">
