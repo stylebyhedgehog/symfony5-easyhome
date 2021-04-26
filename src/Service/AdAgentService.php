@@ -26,7 +26,7 @@ class AdAgentService
         foreach ($agents as $agent){
             if(count($agent->getControlledAds())< $min_count)
             {
-                $min_count =count($agent->getControlledAds())< $min_count;
+                $min_count =count($agent->getControlledAds());
                 $min_agent =$agent;
             }
         }

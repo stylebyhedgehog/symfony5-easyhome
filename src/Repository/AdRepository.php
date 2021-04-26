@@ -3,9 +3,11 @@
 namespace App\Repository;
 
 use App\Data\AdData;
+use App\DTO\Recommendation;
 use App\Entity\Ad;
 use App\Service\constants\AdFilter;
 use App\Service\constants\AdStatus;
+use App\Service\constants\Mode;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -31,15 +33,27 @@ class AdRepository extends ServiceEntityRepository
 
     /**
      * @param AdData $adData
+     * @param int $mode
+     * @param int $id_user
      * @return Ad[]
      */
-    public function findByAgentFilters(AdData $adData, int $id_user)
+    public function findByUserFiltersWithMode(AdData $adData,int $mode, int $id_user)
     {
         $query = $this
-            ->createQueryBuilder('a')
-            ->where('a.agent = :id_user')
-            ->setParameter('id_user', $id_user)
-            ->orderBy('a.update_date', 'DESC');
+            ->createQueryBuilder('a');
+            if ($mode== Mode::$client_ad_posted){
+                $query = $query
+                    ->where('a.owner = :id_user')
+                    ->setParameter('id_user', $id_user)
+                    ->orderBy('a.update_date', 'DESC');
+            }
+            elseif ($mode == Mode::$agent_ad_controlled){
+                $query = $query
+                    ->where('a.agent = :id_user')
+                    ->setParameter('id_user', $id_user)
+                    ->orderBy('a.update_date', 'DESC');
+            }
+
         if (!empty($adData->choice_status) and $adData->choice_status != 5) {
             $query = $query
                 ->andWhere('a.status = :status')
@@ -60,16 +74,27 @@ class AdRepository extends ServiceEntityRepository
         return $query->getQuery()->getResult();
     }
 
+
     /**
      * @param AdData $adData
+     * @param int|null $mode
+     * @param Recommendation|null $recommendation
      * @return Ad[]
      */
-    public function findByClientFilters(AdData $adData)
+    public function findByClientFilters(AdData $adData,?int $mode,?Recommendation $recommendation=null)
     {
         $query = $this
             ->createQueryBuilder('a')
             ->where('a.status = :status')
-            ->setParameter('status', AdStatus::$status_ok)
+            ->setParameter('status', AdStatus::$status_ok);
+            if ($mode == Mode::$recommendation_ads){
+                $query = $query
+                    ->andWhere('a.city = :city')
+                    ->setParameter('city',"%{$recommendation->city}%")
+                    ->andWhere('a.district = :district')
+                    ->setParameter('district',"%{$recommendation->district}%");
+            }
+            $query=$query
             ->orderBy('a.update_date', 'DESC');
 
         if (!empty($adData->q)) {

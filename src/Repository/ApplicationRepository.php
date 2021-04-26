@@ -25,12 +25,18 @@ class ApplicationRepository extends ServiceEntityRepository
      * @param ApplicationData $applicationData
      * @return Application[]
      */
-    public function findByFiltersAndAccessType(ApplicationData $applicationData, int $id_user,string $acces)
+    public function findByFiltersAndAccessType(ApplicationData $applicationData, int $id_user, string $acces, ?int $id_ad = null)
     {
         $query = $this
             ->createQueryBuilder('a')
-            ->where('a.'.$acces.'= :id_user')
-            ->setParameter('id_user', $id_user)
+            ->where('a.' . $acces . '= :id_user')
+            ->setParameter('id_user', $id_user);
+        if ($id_ad != null) {
+            $query = $query
+                ->andWhere('a.ad = :id_ad')
+                ->setParameter('id_ad', $id_ad);
+        }
+        $query = $query
             ->orderBy('a.create_date', 'DESC');
 
         if (!empty($applicationData->choice_status) and $applicationData->choice_status != 7) {

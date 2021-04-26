@@ -103,6 +103,25 @@ class ApplicationController extends AbstractController
     }
 
     /**
+     * Входящие заявки на определенное объявление
+     * @Route ("/client/{id_user}/applications/incoming/ad/{id_ad}", name="client_application_incoming_by_ad")
+     * @param int $id_user
+     * @param int $id_ad
+     * @param Request $request
+     * @return Response
+     */
+    public function client_application_incoming_by_ad(int $id_user,int $id_ad, Request $request){
+        $applicationData= new ApplicationData();
+        $form=$this->createForm(ApplicationFilterType::class,$applicationData);
+        $form->handleRequest($request);
+        $applications=$this->applicationRepository->findByFiltersAndAccessType($applicationData,$id_user,"owner",$id_ad);
+        return $this->render('application/applicationIncomingAll.html.twig',[
+            'applications'=>$applications,
+            'form'=>$form->createView()
+        ]);
+    }
+
+    /**
      * @Route ("/client/{id_user}/applications/incoming/{id_application}/accept", name="client_application_incoming_accept")
      * @param int $id_user
      * @param int $id_application

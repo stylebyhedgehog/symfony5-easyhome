@@ -99,13 +99,8 @@
                         <div class="row mb-2" >
                             <div class="col-4">
                                 <small >
-                                    {% if is_granted('ROLE_AGENT') %}
-                                        Агент №{{ app.user.id }}
+                                        Пользователь № {{ app.request.attributes.get('id_user') }}
 
-                                    {% else %}
-                                            Пользователь №{{ app.user.id }}
-
-                                    {% endif %}
                                 </small>
                             </div>
                         </div>

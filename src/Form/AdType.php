@@ -27,6 +27,13 @@ class AdType extends AbstractType
                         'minMessage'=>'ЭЭЭЭЭЭЭЭЭЭЭ'])
                 ]
             ])
+            ->add('district', TextType::class,[
+                'constraints' => [
+                    new NotBlank(['message' => 'district  cannot be blank!']),
+                    new Length(['min'=>2,
+                        'minMessage'=>'ЭЭЭЭЭЭЭЭЭЭЭ'])
+                ]
+            ])
             ->add('address', TextType::class,[
                 'constraints' => [
                     new NotBlank(['message' => 'address  cannot be blank!']),

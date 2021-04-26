@@ -32,6 +32,10 @@ class Ad
     private $city;
 
     /**
+     * @ORM\Column(name="district",type="string", nullable=true, length=150)
+     */
+    private $district;
+    /**
      * @ORM\Column(name="address",type="string", nullable=false, length=150)
      */
     private $address;
@@ -95,10 +99,15 @@ class Ad
      */
     private $applications;
 
+    /**
+     * @ORM\OneToMany(targetEntity="BrowsingHistory", mappedBy="ad")
+     */
+    private $browsing_history;
     public function __construct()
     {
         $this->images = new ArrayCollection();
         $this->applications = new ArrayCollection();
+        $this->browsing_history = new ArrayCollection();
     }
     public function getId(): ?int
     {
@@ -300,6 +309,48 @@ class Ad
                 $application->setAd(null);
             }
         }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|BrowsingHistory[]
+     */
+    public function getBrowsingHistory(): Collection
+    {
+        return $this->browsing_history;
+    }
+
+    public function addBrowsingHistory(BrowsingHistory $browsingHistory): self
+    {
+        if (!$this->browsing_history->contains($browsingHistory)) {
+            $this->browsing_history[] = $browsingHistory;
+            $browsingHistory->setAd($this);
+        }
+
+        return $this;
+    }
+
+    public function removeBrowsingHistory(BrowsingHistory $browsingHistory): self
+    {
+        if ($this->browsing_history->removeElement($browsingHistory)) {
+            // set the owning side to null (unless already changed)
+            if ($browsingHistory->getAd() === $this) {
+                $browsingHistory->setAd(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getDistrict(): ?string
+    {
+        return $this->district;
+    }
+
+    public function setDistrict(string $district): self
+    {
+        $this->district = $district;
 
         return $this;
     }

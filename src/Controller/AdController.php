@@ -9,11 +9,14 @@ use App\Entity\AdImage;
 use App\Form\AdFilterType;
 use App\Form\AdType;
 use App\Repository\AdRepository;
+use App\Repository\BrowsingHistoryRepository;
 use App\Repository\ClientRepository;
 use App\Repository\FavoriteRepository;
 use App\Service\AdAgentService;
 
+use App\Service\AdRecommendationService;
 use App\Service\constants\AdStatus;
+use App\Service\constants\Mode;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -29,13 +32,15 @@ class AdController extends AbstractController
     private $entityManager;
     private $clientRepository;
     private $favoriteRepository;
+    private $browsingHistoryRepository;
 
-    public function __construct(FavoriteRepository $favoriteRepository, ClientRepository $clientRepository, AdRepository $adRepository, EntityManagerInterface $entityManager)
+    public function __construct(BrowsingHistoryRepository $browsingHistoryRepository,FavoriteRepository $favoriteRepository, ClientRepository $clientRepository, AdRepository $adRepository, EntityManagerInterface $entityManager)
     {
         $this->favoriteRepository = $favoriteRepository;
         $this->adRepository = $adRepository;
         $this->entityManager = $entityManager;
         $this->clientRepository = $clientRepository;
+        $this->browsingHistoryRepository=$browsingHistoryRepository;
     }
 
 
@@ -49,7 +54,26 @@ class AdController extends AbstractController
         $data= new AdData();
         $form= $this->createForm(AdFilterType::class,$data);
         $form->handleRequest($request);
-        $ads =$this->adRepository->findByClientFilters($data);
+        $ads =$this->adRepository->findByClientFilters($data, Mode::$agent_ad_controlled);
+
+        return $this->render('ad/adAll.html.twig', [
+            'ads' => $ads,
+            'form'=> $form->createView()
+        ]);
+    }
+    /**
+     * @Route("/ads/recommended", name="general_ad_all_recommended")
+     * @param Request $request
+     * @return Response
+     */
+    public function general_ad_all_recommended(Request $request,AdRecommendationService $adRecommendationService)
+    {
+        //TODO ДОБАВИТЬ УВЕДОМЛЕНИЕ О НЕУДАЧНОМ ПОДБОРЕ
+        $data= new AdData();
+        $form= $this->createForm(AdFilterType::class,$data);
+        $form->handleRequest($request);
+        $recommendation= $adRecommendationService->getRecommendation($this->getUser());
+        $ads =$this->adRepository->findByClientFilters($data, Mode::$recommendation_ads,$recommendation);
 
         return $this->render('ad/adAll.html.twig', [
             'ads' => $ads,
@@ -60,12 +84,16 @@ class AdController extends AbstractController
     /**
      * @Route("/ads/{id_ad}", name="general_ad_one")
      * @param Request $request
+     * @param AdRecommendationService $adRecommendationService
      * @return Response
      */
-    public function general_ad_one(Request $request)
+    public function general_ad_one(Request $request,AdRecommendationService $adRecommendationService)
     {
         $ad = $this->adRepository->find($request->get("id_ad"));
-        $user = $this->getUser();
+        if ($this->isGranted("ROLE_USER") and !$this->isGranted("ROLE_AGENT")){
+            $user = $this->getUser();
+            $adRecommendationService->push($ad,$user,$this->entityManager);
+        }
         return $this->render('ad/adOne.html.twig', [
             'ad' => $ad,
             'current_template' => 'general_ad_one'
@@ -81,9 +109,9 @@ class AdController extends AbstractController
     public function agent_ad_all(Request $request, int $id_user)
     {
         $data= new AdData();
-        $form= $this->createForm(AdFilterType::class,$data,['mode'=>"agent"]);
+        $form= $this->createForm(AdFilterType::class,$data,['mode'=>"date_choices"]);
         $form->handleRequest($request);
-        $ads =$this->adRepository->findByAgentFilters($data, $id_user);
+        $ads =$this->adRepository->findByUserFiltersWithMode($data,Mode::$agent_ad_controlled, $id_user);
 
         return $this->render('ad/adAgentAll.html.twig', [
             'ads' => $ads,
@@ -130,6 +158,7 @@ class AdController extends AbstractController
         return $form;
     }
 
+
     /**
      * @Route ("/client/{id_user}/ads/own/",name="client_ad_own_all")
      * @param Request $request
@@ -138,12 +167,14 @@ class AdController extends AbstractController
      */
     public function client_ad_own_all(Request $request, int $id_user)
     {
-        $client = $this->clientRepository->find($id_user);
-      
+        $adData=new AdData();
+        $form= $this->createForm(AdFilterType::class,$adData);
+        $form->handleRequest($request);
+        $ads= $this->adRepository->findByUserFiltersWithMode($adData,Mode::$client_ad_posted,$id_user);
 
-        $ads = $client->getPostedAds();
         return $this->render('ad/adOwnAll.html.twig', [
             'ads' => $ads,
+            'form' =>$form->createView()
         ]);
     }
 
@@ -153,6 +184,7 @@ class AdController extends AbstractController
      * @param AdAgentService $adService
      * @return Response
      */
+    //TODO отдельный сервис для загрузки файлов
     public function client_ad_own_create(Request $request, AdAgentService $adService)
     {
         $ad = new Ad();
@@ -192,6 +224,39 @@ class AdController extends AbstractController
         return $this->render('ad/adOwnC.html.twig', [
             'form' => $form->createView(),
         ]);
+    }
+
+    /**
+     * @Route("/client/{id_user}/ads/own/{id_ad}/update", name="client_ad_own_update")
+     * @param Request $request
+     * @param int $id_user
+     * @param int $id_ad
+     * @return Response
+     */
+    public function client_ad_own_update(Request $request,int $id_user, int $id_ad){
+        //TODO ПОДГРУЗКА КАРТИНКИ
+        $ad = $this->adRepository->find($id_ad);
+        $form = $this->createForm(AdType::class, $ad);
+        $form->handleRequest($request);
+        return $this->render('ad/adOwnC.html.twig', [
+            'form' => $form->createView(),
+        ]);
+    }
+
+    /**
+     * @Route("/client/{id_user}/ads/own/{id_ad}/delete", name="client_ad_own_delete")
+     * @param int $id_user
+     * @param int $id_ad
+     * @return Response
+     */
+    //TODO УДАЛЕНИЕ ФАЙЛА КАРТИНКИ ПРИ УДАЛЕНИИ ОБЪЯВЛЕНИЯ
+    public function client_ad_own_delete(int $id_user, int $id_ad){
+        $ad=$this->adRepository->find($id_ad);
+        $this->entityManager->remove($ad);
+        $this->entityManager->flush();
+        return $this->redirectToRoute('general_ad_all');
+    }
+    public function client_ad_own_edit(){
 
     }
 }

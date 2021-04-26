@@ -34,7 +34,7 @@ class AdFilterType extends AbstractType
                     'aria-label' => 'Recipients username'
                 ],
                     'required' => false]);
-            if ($options['mode'] == "agent"){
+            if ($options['mode'] == "date_choices"){
                 $builder
                     ->add('sort_param', ChoiceType::class, [
                         'attr' => [
@@ -117,7 +117,7 @@ class AdFilterType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => AdData::class,
-            'mode' => 'client'
+            'mode' => 'all_choices'
         ]);
     }
 }

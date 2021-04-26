@@ -83,6 +83,11 @@ class Client implements UserInterface
      */
     private $personal_data;
 
+    /**
+     * @ORM\OneToMany(targetEntity="BrowsingHistory", mappedBy="client")
+     */
+    private $browsing_history;
+
     public function __construct() {
 
         $this->controlled_ads = new ArrayCollection();
@@ -93,6 +98,7 @@ class Client implements UserInterface
         $this->applications_sent = new ArrayCollection();
         $this->applications_incoming = new ArrayCollection();
         $this->applications_controlled = new ArrayCollection();
+        $this->browsing_history = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -462,6 +468,47 @@ class Client implements UserInterface
             // set the owning side to null (unless already changed)
             if ($applicationsControlled->getAgent() === $this) {
                 $applicationsControlled->setAgent(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|BrowsingHistory[]
+     */
+    public function getBrowsingHistory(): Collection
+    {
+        return $this->browsing_history;
+    }
+    /**
+     * @return Collection|Ad[]
+     */
+    public function getBrowsingHistoryAd(): Collection
+    {
+        $ads=new ArrayCollection();
+        foreach ($this->browsing_history as $item){
+            $ads->add($item->getAd());
+        }
+        return $ads;
+    }
+
+    public function addBrowsingHistory(BrowsingHistory $browsingHistory): self
+    {
+        if (!$this->browsing_history->contains($browsingHistory)) {
+            $this->browsing_history[] = $browsingHistory;
+            $browsingHistory->setClient($this);
+        }
+
+        return $this;
+    }
+
+    public function removeBrowsingHistory(BrowsingHistory $browsingHistory): self
+    {
+        if ($this->browsing_history->removeElement($browsingHistory)) {
+            // set the owning side to null (unless already changed)
+            if ($browsingHistory->getClient() === $this) {
+                $browsingHistory->setClient(null);
             }
         }
 
