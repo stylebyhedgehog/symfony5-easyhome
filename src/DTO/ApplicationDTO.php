@@ -4,7 +4,7 @@
 namespace App\Data;
 
 
-class ApplicationData
+class ApplicationDTO
 {
     /**
      * @var integer|null

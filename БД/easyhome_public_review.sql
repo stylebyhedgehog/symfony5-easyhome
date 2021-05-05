@@ -1,0 +1,16 @@
+INSERT INTO public.review (id, rater_id, client_id, text, rating, create_date) VALUES (3, 2, 1, 's', 1, '2021-04-09 14:33:48');
+INSERT INTO public.review (id, rater_id, client_id, text, rating, create_date) VALUES (4, 2, 1, 'sf', 1, '2021-04-09 14:33:57');
+INSERT INTO public.review (id, rater_id, client_id, text, rating, create_date) VALUES (6, 2, 1, 'f', 2, '2021-04-09 14:36:25');
+INSERT INTO public.review (id, rater_id, client_id, text, rating, create_date) VALUES (7, 2, 1, 'f', 2, '2021-04-09 14:37:30');
+INSERT INTO public.review (id, rater_id, client_id, text, rating, create_date) VALUES (10, 2, 1, 'ss', 4, '2021-04-09 18:24:07');
+INSERT INTO public.review (id, rater_id, client_id, text, rating, create_date) VALUES (11, 2, 1, 'ssff', 4, '2021-04-09 18:24:11');
+INSERT INTO public.review (id, rater_id, client_id, text, rating, create_date) VALUES (12, 2, 1, 'ssff', 4, '2021-04-09 18:25:33');
+INSERT INTO public.review (id, rater_id, client_id, text, rating, create_date) VALUES (13, 2, 1, 'ssff', 4, '2021-04-09 18:25:40');
+INSERT INTO public.review (id, rater_id, client_id, text, rating, create_date) VALUES (14, 2, 3, 'sad', 5, '2021-04-13 15:02:54');
+INSERT INTO public.review (id, rater_id, client_id, text, rating, create_date) VALUES (15, 1, 3, 'ыы', 5, '2021-04-25 13:22:41');
+INSERT INTO public.review (id, rater_id, client_id, text, rating, create_date) VALUES (16, 1, 3, 'ыы', 4, '2021-04-25 13:22:50');
+INSERT INTO public.review (id, rater_id, client_id, text, rating, create_date) VALUES (17, 1, 3, 'ыы', 4, '2021-04-25 13:24:08');
+INSERT INTO public.review (id, rater_id, client_id, text, rating, create_date) VALUES (18, 1, 3, 'ыы', 4, '2021-04-25 13:24:30');
+INSERT INTO public.review (id, rater_id, client_id, text, rating, create_date) VALUES (19, 1, 3, 's', 2, '2021-04-25 13:24:52');
+INSERT INTO public.review (id, rater_id, client_id, text, rating, create_date) VALUES (20, 1, 3, 's', 1, '2021-04-25 13:24:55');
+INSERT INTO public.review (id, rater_id, client_id, text, rating, create_date) VALUES (21, 1, 3, 's', 1, '2021-04-25 13:24:58');

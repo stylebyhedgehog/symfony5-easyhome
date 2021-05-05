@@ -1,6 +1,5 @@
 {% extends 'navigation.html.twig' %}
 {% block body %}
-    <script src="https://api-maps.yandex.ru/2.1?apikey=2450128e-2312-4465-8562-757f7492cbbf&lang=ru_RU" type="text/javascript"></script>
     <script src="{{ asset('/js/map.js') }}" type="text/javascript"></script>
     <style>
          #map {
@@ -87,8 +86,8 @@
                             </div>
                             {# Адрес #}
                             <div class="row mb-1">
-                                <h5>{{ "г. "~ad.city ~", ул. "~ ad.address ~", "~ ad.sqr }} <span
-                                            style="white-space: nowrap;"> м<sup>2</sup></span></h5>
+                                <h5> <span id="address_for_map">{{"г. "~ ad.city ~", "~ad.streetType ~" "~ ad.street~", "~ad.houseNumber}}</span>
+                                    {{", "~ ad.sqr }}<span style="white-space: nowrap;"> м<sup>2</sup></span></h5>
                             </div>
                             {# Опциональный блок (Владелец/Агент/обычный юзер) #}
                             <div class="row mb-4  ">
@@ -152,13 +151,10 @@
                                                     </a>
                                                 {% endif %}
                                             {% endif %}
-
                                         {% endif %}
                                     </div>
                                 </div>
-
                             </div>
-
                             {# Описание #}
                             <div style="background-color: #E0FFFF">
                                 {{ ad.description }}
@@ -172,10 +168,7 @@
                                 {{ ad.price|number_format(0, '.', ' ') }}р
                             </div>
                             {{ ad.updateDate|date("d.m.Y H:i") }}
-
                         </div>
-
-
                     </div>
                 </div>
             </div>
@@ -254,7 +247,7 @@
             </div>
             {# Карта #}
             <div class="col md-8">
-                <div id="address_for_map" hidden>{{ ad.city }}, ул. {{ ad.address }}</div>
+
                 <div id="map"></div>
             </div>
         </div>

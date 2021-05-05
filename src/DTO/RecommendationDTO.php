@@ -4,7 +4,7 @@
 namespace App\DTO;
 
 
-class Recommendation
+class RecommendationDTO
 {
     public $district;
     public $city;

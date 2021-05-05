@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 
-use App\Data\AdData;
+use App\Data\AdDTO;
 use App\Entity\Ad;
 use App\Entity\AdImage;
 use App\Form\AdFilterType;
@@ -15,13 +15,16 @@ use App\Repository\FavoriteRepository;
 use App\Service\AdAgentService;
 
 use App\Service\AdRecommendationService;
+use App\Service\AdVerificationService;
 use App\Service\constants\AdStatus;
 use App\Service\constants\Mode;
+use App\Controller\RegionCityController;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -51,9 +54,10 @@ class AdController extends AbstractController
      */
     public function general_ad_all(Request $request)
     {
-        $data= new AdData();
+        $data= new AdDTO();
         $form= $this->createForm(AdFilterType::class,$data);
         $form->handleRequest($request);
+
         $ads =$this->adRepository->findByClientFilters($data, Mode::$agent_ad_controlled);
 
         return $this->render('ad/adAll.html.twig', [
@@ -69,7 +73,7 @@ class AdController extends AbstractController
     public function general_ad_all_recommended(Request $request,AdRecommendationService $adRecommendationService)
     {
         //TODO ДОБАВИТЬ УВЕДОМЛЕНИЕ О НЕУДАЧНОМ ПОДБОРЕ
-        $data= new AdData();
+        $data= new AdDTO();
         $form= $this->createForm(AdFilterType::class,$data);
         $form->handleRequest($request);
         $recommendation= $adRecommendationService->getRecommendation($this->getUser());
@@ -108,7 +112,7 @@ class AdController extends AbstractController
      */
     public function agent_ad_all(Request $request, int $id_user)
     {
-        $data= new AdData();
+        $data= new AdDTO();
         $form= $this->createForm(AdFilterType::class,$data,['mode'=>"date_choices"]);
         $form->handleRequest($request);
         $ads =$this->adRepository->findByUserFiltersWithMode($data,Mode::$agent_ad_controlled, $id_user);
@@ -167,10 +171,10 @@ class AdController extends AbstractController
      */
     public function client_ad_own_all(Request $request, int $id_user)
     {
-        $adData=new AdData();
-        $form= $this->createForm(AdFilterType::class,$adData);
+        $adDTO=new AdDTO();
+        $form= $this->createForm(AdFilterType::class,$adDTO);
         $form->handleRequest($request);
-        $ads= $this->adRepository->findByUserFiltersWithMode($adData,Mode::$client_ad_posted,$id_user);
+        $ads= $this->adRepository->findByUserFiltersWithMode($adDTO,Mode::$client_ad_posted,$id_user);
 
         return $this->render('ad/adOwnAll.html.twig', [
             'ads' => $ads,
@@ -185,18 +189,24 @@ class AdController extends AbstractController
      * @return Response
      */
     //TODO отдельный сервис для загрузки файлов
-    public function client_ad_own_create(Request $request, AdAgentService $adService)
+    public function client_ad_own_create(Request $request, AdAgentService $adService, AdVerificationService $adVerificationService,AdRepository $adRepository)
     {
+        $error ="";
         $ad = new Ad();
         $form = $this->createForm(AdType::class, $ad);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-
+            $error=$adVerificationService->mock($ad);
+            if($error!=null){
+                return $this->render('ad/adOwnC.html.twig', [
+                    'form' => $form->createView(),
+                    'error'=> $error
+                ]);
+            }
             $owner = $this->clientRepository->find($request->get("id_user"));
             $ad->setOwner($owner);
             $current_time = new DateTime();
-            //TODO РЕАЛИЗОВАТЬ
             $agent = $adService->getAgent($this->clientRepository, $this->adRepository);
             $ad->setAgent($agent);
             $ad->setCreateDate($current_time);
@@ -223,6 +233,8 @@ class AdController extends AbstractController
         }
         return $this->render('ad/adOwnC.html.twig', [
             'form' => $form->createView(),
+            'error'=> $error,
+            'mode'=>"create"
         ]);
     }
 
@@ -240,6 +252,8 @@ class AdController extends AbstractController
         $form->handleRequest($request);
         return $this->render('ad/adOwnC.html.twig', [
             'form' => $form->createView(),
+            'error'=>null,
+            'mode'=>"update"
         ]);
     }
 

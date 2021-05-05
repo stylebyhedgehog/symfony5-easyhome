@@ -1,0 +1,3 @@
+INSERT INTO public.application (id, sender_id, ad_id, status, create_date, owner_id, agent_id) VALUES (6, 1, 40, 1, '2021-04-18 21:39:11', 2, 3);
+INSERT INTO public.application (id, sender_id, ad_id, status, create_date, owner_id, agent_id) VALUES (7, 1, 39, 1, '2021-04-18 21:39:20', 2, 3);
+INSERT INTO public.application (id, sender_id, ad_id, status, create_date, owner_id, agent_id) VALUES (5, 2, 35, 3, '2021-04-18 21:39:00', 1, 3);

@@ -1,6 +1,7 @@
 {# templates/security/login.html.twig #} {% extends 'navigation.html.twig' %} {% block
     title %}Log in!{% endblock %} {% block body %}
-    <div class="container">
+    {% if not app.user %}
+    <div class="d-flex justify-content-center">
         <div class="row">
             <div class="col-md-10 ml-md-auto">
                 <div class="">
@@ -11,17 +12,11 @@
                                     <div class="alert alert-danger">
                                         {{ error.messageKey|trans(error.messageData, 'security') }}
                                     </div>
-                                {% endif %} {% if app.user %}
-                                    <div class="mb-3">
-                                        You are logged in as {{ app.user.username }},
-                                        <a href="{{ path('app_logout') }}">Logout</a>
-                                    </div>
                                 {% endif %}
-                                <div class="card-header mb-3">Please sign in</div>
-                                <div class="form-group">
+                                <div class="card-header mb-3">Авторизация</div>
+                                <div class="form-group pb-1">
                                     <label for="email" class="col-md-4 control-label"
-                                    >E-Mail Address</label
-                                    >
+                                    >E-Mail</label>
                                     <div class="col-md-12">
                                         <input
                                                 id="inputEmail"
@@ -34,9 +29,9 @@
                                         />
                                     </div>
                                 </div>
-                                <div class="form-group">
+                                <div class="form-group pb-2">
                                     <label for="password" class="col-md-4 control-label"
-                                    >Password</label
+                                    >Пароль</label
                                     >
                                     <div class="col-md-12">
                                         <input
@@ -56,7 +51,7 @@
                                 <div class="form-group">
                                     <div class="col-md-12">
                                         <button type="submit" class="btn btn-primary">
-                                            <i class="fa fa-btn fa-sign-in"></i> Login
+                                            <i class="fa fa-btn fa-sign-in"></i> Войти
                                         </button>
                                     </div>
                                 </div>
@@ -67,4 +62,10 @@
             </div>
         </div>
     </div>
+    {% else %}
+        <div class="d-flex justify-content-center">
+            Вы вошли в систему как {{ app.user.username }},
+            <a href="{{ path('app_logout') }}">Logout</a>
+        </div>
+    {% endif %}
 {% endblock %}

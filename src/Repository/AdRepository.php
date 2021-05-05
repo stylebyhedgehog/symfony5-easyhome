@@ -2,8 +2,8 @@
 
 namespace App\Repository;
 
-use App\Data\AdData;
-use App\DTO\Recommendation;
+use App\Data\AdDTO;
+use App\DTO\RecommendationDTO;
 use App\Entity\Ad;
 use App\Service\constants\AdFilter;
 use App\Service\constants\AdStatus;
@@ -32,12 +32,12 @@ class AdRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param AdData $adData
+     * @param AdDTO $adDTO
      * @param int $mode
      * @param int $id_user
      * @return Ad[]
      */
-    public function findByUserFiltersWithMode(AdData $adData,int $mode, int $id_user)
+    public function findByUserFiltersWithMode(AdDTO $adDTO, int $mode, int $id_user)
     {
         $query = $this
             ->createQueryBuilder('a');
@@ -54,17 +54,17 @@ class AdRepository extends ServiceEntityRepository
                     ->orderBy('a.update_date', 'DESC');
             }
 
-        if (!empty($adData->choice_status) and $adData->choice_status != 5) {
+        if (!empty($adDTO->choice_status) and $adDTO->choice_status != 5) {
             $query = $query
                 ->andWhere('a.status = :status')
-                ->setParameter('status', $adData->choice_status);
+                ->setParameter('status', $adDTO->choice_status);
         }
-        if (!empty($adData->sort_param)) {
+        if (!empty($adDTO->sort_param)) {
 
-            if ($adData->sort_param == AdFilter::$new) {
+            if ($adDTO->sort_param == AdFilter::$new) {
                 $query = $query
                     ->orderBy('a.update_date', 'DESC');
-            } elseif ($adData->sort_param == AdFilter::$old) {
+            } elseif ($adDTO->sort_param == AdFilter::$old) {
                 $query = $query
                     ->orderBy('a.update_date', 'ASC');
             } else {
@@ -76,12 +76,12 @@ class AdRepository extends ServiceEntityRepository
 
 
     /**
-     * @param AdData $adData
+     * @param AdDTO $adDTO
      * @param int|null $mode
-     * @param Recommendation|null $recommendation
+     * @param RecommendationDTO|null $recommendation
      * @return Ad[]
      */
-    public function findByClientFilters(AdData $adData,?int $mode,?Recommendation $recommendation=null)
+    public function findByClientFilters(AdDTO $adDTO, ?int $mode, ?RecommendationDTO $recommendation=null)
     {
         $query = $this
             ->createQueryBuilder('a')
@@ -97,46 +97,54 @@ class AdRepository extends ServiceEntityRepository
             $query=$query
             ->orderBy('a.update_date', 'DESC');
 
-        if (!empty($adData->q)) {
+        if (!empty($adDTO->q)) {
             $query = $query
                 ->andWhere('a.city LIKE :q')
-                ->setParameter('q', "%{$adData->q}%");
+                ->setParameter('q', "%{$adDTO->q}%")
+                ->orWhere('a.street LIKE :q')
+                ->setParameter('q', "%{$adDTO->q}%");
         }
-        if (!empty($adData->min_price)) {
+        if (!empty($adDTO->city)) {
+            $query = $query
+                ->andWhere('a.city = :city')
+                ->setParameter('city', $adDTO->city);
+
+        }
+        if (!empty($adDTO->min_price)) {
             $query = $query
                 ->andWhere('a.price > :min_price')
-                ->setParameter('min_price', $adData->min_price);
+                ->setParameter('min_price', $adDTO->min_price);
 
         }
-        if (!empty($adData->max_price)) {
+        if (!empty($adDTO->max_price)) {
             $query = $query
                 ->andWhere('a.price < :max_price')
-                ->setParameter('max_price', $adData->max_price);
+                ->setParameter('max_price', $adDTO->max_price);
 
         }
-        if (!empty($adData->min_sqr)) {
+        if (!empty($adDTO->min_sqr)) {
             $query = $query
                 ->andWhere('a.sqr > :min_sqr')
-                ->setParameter('min_sqr', $adData->min_sqr);
+                ->setParameter('min_sqr', $adDTO->min_sqr);
 
         }
-        if (!empty($adData->max_sqr)) {
+        if (!empty($adDTO->max_sqr)) {
             $query = $query
                 ->andWhere('a.sqr <= :max_sqr')
-                ->setParameter('max_sqr', $adData->max_sqr);
+                ->setParameter('max_sqr', $adDTO->max_sqr);
         }
-        if (!empty($adData->sort_param)) {
+        if (!empty($adDTO->sort_param)) {
 
-            if ($adData->sort_param == AdFilter::$new) {
+            if ($adDTO->sort_param == AdFilter::$new) {
                 $query = $query
                     ->orderBy('a.update_date', 'DESC');
-            } elseif ($adData->sort_param == AdFilter::$old) {
+            } elseif ($adDTO->sort_param == AdFilter::$old) {
                 $query = $query
                     ->orderBy('a.update_date', 'ASC');
-            } elseif ($adData->sort_param == AdFilter::$expensive) {
+            } elseif ($adDTO->sort_param == AdFilter::$expensive) {
                 $query = $query
                     ->orderBy('a.price', 'DESC');
-            } elseif ($adData->sort_param == AdFilter::$cheap) {
+            } elseif ($adDTO->sort_param == AdFilter::$cheap) {
                 $query = $query
                     ->orderBy('a.price', 'ASC');
             } else {
@@ -148,32 +156,4 @@ class AdRepository extends ServiceEntityRepository
 
     }
 
-    // /**
-    //  * @return Ad[] Returns an array of Ad objects
-    //  */
-    /*
-    public function findByExampleField($value)
-    {
-        return $this->createQueryBuilder('a')
-            ->andWhere('a.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('a.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
-
-    /*
-    public function findOneBySomeField($value): ?Ad
-    {
-        return $this->createQueryBuilder('a')
-            ->andWhere('a.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
-    }
-    */
 }

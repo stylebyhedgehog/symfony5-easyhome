@@ -1,0 +1,4 @@
+INSERT INTO public.client (id, email, roles, password) VALUES (1, 'asd@asd.ru', '["ROLE_USER"]', '$argon2id$v=19$m=65536,t=4,p=1$S2l0S25FdEd1UmtscWowNQ$TTJk2fhD1/T7qlkar0Tzi3GehxFBDOJsSDjoeQyuJBY');
+INSERT INTO public.client (id, email, roles, password) VALUES (2, 'us@us.ru', '["ROLE_USER"]', '$argon2id$v=19$m=65536,t=4,p=1$bTVockNQZk5zbHIuRDlONg$Y05qj61OShtNcESAkOjsGWAKZNptG+G3JVrQV9LTeoU');
+INSERT INTO public.client (id, email, roles, password) VALUES (3, 'agent@agent.ru', '["ROLE_USER","ROLE_AGENT"]', '$argon2id$v=19$m=65536,t=4,p=1$UGsvVjdUWFY4Wk8xeC41Uw$E7opdILFcG2pusBs+3Az9KNXnXPxbFo20CttfvYc980');
+INSERT INTO public.client (id, email, roles, password) VALUES (6, 'ag@ag.ru', '["ROLE_USER","ROLE_AGENT"]', '$argon2id$v=19$m=65536,t=4,p=1$MDR0TjdPOElpelBESEJEYg$NCZmpC5m/4edksgowmXJvAQsvv7JH2k7UZKSAm3tH3o');

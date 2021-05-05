@@ -2,7 +2,7 @@
 
 namespace App\Repository;
 
-use App\Data\ApplicationData;
+use App\Data\ApplicationDTO;
 use App\Entity\Application;
 use App\Service\constants\ApplicationFilter;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -22,10 +22,10 @@ class ApplicationRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param ApplicationData $applicationData
+     * @param ApplicationDTO $applicationDTO
      * @return Application[]
      */
-    public function findByFiltersAndAccessType(ApplicationData $applicationData, int $id_user, string $acces, ?int $id_ad = null)
+    public function findByFiltersAndAccessType(ApplicationDTO $applicationDTO, int $id_user, string $acces, ?int $id_ad = null)
     {
         $query = $this
             ->createQueryBuilder('a')
@@ -39,17 +39,17 @@ class ApplicationRepository extends ServiceEntityRepository
         $query = $query
             ->orderBy('a.create_date', 'DESC');
 
-        if (!empty($applicationData->choice_status) and $applicationData->choice_status != 7) {
+        if (!empty($applicationDTO->choice_status) and $applicationDTO->choice_status != 7) {
             $query = $query
                 ->andWhere('a.status = :status')
-                ->setParameter('status', $applicationData->choice_status);
+                ->setParameter('status', $applicationDTO->choice_status);
         }
-        if (!empty($applicationData->sort_param)) {
+        if (!empty($applicationDTO->sort_param)) {
 
-            if ($applicationData->sort_param == ApplicationFilter::$new) {
+            if ($applicationDTO->sort_param == ApplicationFilter::$new) {
                 $query = $query
                     ->orderBy('a.create_date', 'DESC');
-            } elseif ($applicationData->sort_param == ApplicationFilter::$old) {
+            } elseif ($applicationDTO->sort_param == ApplicationFilter::$old) {
                 $query = $query
                     ->orderBy('a.create_date', 'ASC');
             } else {
@@ -59,32 +59,4 @@ class ApplicationRepository extends ServiceEntityRepository
         return $query->getQuery()->getResult();
     }
 
-    // /**
-    //  * @return Application[] Returns an array of Application objects
-    //  */
-    /*
-    public function findByExampleField($value)
-    {
-        return $this->createQueryBuilder('a')
-            ->andWhere('a.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('a.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
-
-    /*
-    public function findOneBySomeField($value): ?Application
-    {
-        return $this->createQueryBuilder('a')
-            ->andWhere('a.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
-    }
-    */
 }

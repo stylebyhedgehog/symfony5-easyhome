@@ -4,7 +4,7 @@
 namespace App\Form;
 
 
-use App\Data\ApplicationData;
+use App\Data\ApplicationDTO;
 use App\Service\constants\AdFilter;
 use App\Service\constants\ApplicationFilter;
 use Symfony\Component\Form\AbstractType;
@@ -41,7 +41,7 @@ class ApplicationFilterType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => ApplicationData::class,
+            'data_class' => ApplicationDTO::class,
         ]);
     }
 }

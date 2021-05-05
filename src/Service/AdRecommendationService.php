@@ -4,7 +4,7 @@
 namespace App\Service;
 
 
-use App\DTO\Recommendation;
+use App\DTO\RecommendationDTO;
 use App\Entity\Ad;
 use App\Entity\BrowsingHistory;
 use App\Entity\Client;
@@ -29,7 +29,7 @@ public function getRecommendation(Client $client){
     $watched_ads= $client->getBrowsingHistoryAd()->toArray();
     $district=$this->max_attribute_in_array($watched_ads,'getDistrict');
     $city=$this->max_attribute_in_array($watched_ads,'getCity');
-    $recommendation=new Recommendation();
+    $recommendation=new RecommendationDTO();
     $recommendation->district=$district;
     $recommendation->city=$city;
     return $recommendation;

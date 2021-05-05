@@ -33,14 +33,14 @@
             <h5 class="card-title">
                 {% if  is_granted('ROLE_AGENT') %}
                         <a href="{{ path('agent_ad_one', {'id_user':app.user.id,'id_ad': ad.id}) }}">
-                            {{ ad.city ~", "~ ad.address ~", "~ ad.sqr }}
+                            {{ ad.city ~", "~ ad.street ~", "~ ad.sqr }}
                             <span style="white-space: nowrap;"> м<sup>2</sup></span>
                         </a>
 
                         {% else%}
-                            <a href="{{ path('general_ad_one', {'id_ad': ad.id}) }}">
-                                {{ ad.city ~", "~ ad.address ~", "~ ad.sqr }}
-                                <span style="white-space: nowrap;"> м<sup>2</sup></span>
+                            <a  href="{{ path('general_ad_one', {'id_ad': ad.id}) }}">
+                                <span class="address_field">{{"г. "~ ad.city ~", "~ad.streetType ~" "~ ad.street~", "~ad.houseNumber}}</span>
+                                {{", "~ ad.sqr }}<span style="white-space: nowrap;"> м<sup>2</sup></span>
                             </a>
                     {% endif %}
 

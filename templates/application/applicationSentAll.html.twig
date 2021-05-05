@@ -16,7 +16,8 @@
                 <div class="row border mb-2">
                     <div class="col-6">
                         <a href="{{ path('general_ad_one', {'id_ad': application.ad.id}) }}">
-                            {{ application.ad.city ~", "~ application.ad.address ~", "~ application.ad.sqr }}
+                            {{"г. "~ application.ad.city ~", "~application.ad.streetType ~" "~ application.ad.street
+                            ~", "~application.ad.houseNumber~", "~ application.ad.sqr }}
                             <span style="white-space: nowrap;"> м<sup>2</sup></span>
                         </a>
                     </div>

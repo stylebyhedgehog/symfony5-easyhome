@@ -27,6 +27,10 @@ class Ad
     private $id;
 
     /**
+     * @ORM\Column(name="region",type="string", nullable=false, length=150)
+     */
+    private $region;
+    /**
      * @ORM\Column(name="city",type="string", nullable=false, length=150)
      */
     private $city;
@@ -35,15 +39,26 @@ class Ad
      * @ORM\Column(name="district",type="string", nullable=true, length=150)
      */
     private $district;
-    /**
-     * @ORM\Column(name="address",type="string", nullable=false, length=150)
-     */
-    private $address;
 
     /**
-     * @ORM\Column(name="flat",type="integer", nullable=false)
+     * @ORM\Column(name="street_type",type="string", nullable=false, length=150)
      */
-    private $flat;
+    private $street_type;
+
+    /**
+     * @ORM\Column(name="street",type="string", nullable=false, length=150)
+     */
+    private $street;
+
+    /**
+     * @ORM\Column(name="house_number",type="string", nullable=false, length=150)
+     */
+    private $house_number;
+
+    /**
+     * @ORM\Column(name="flat_number",type="string", nullable=true)
+     */
+    private $flat_number;
 
     /**
      * @ORM\Column(name="sqr",type="float", nullable=false)
@@ -71,7 +86,6 @@ class Ad
      * @JoinColumn(name="agent_id", referencedColumnName="id")
      */
     private $agent;
-
 
     /**
      * @ORM\Column(name="status",type="integer", nullable=false)
@@ -103,6 +117,11 @@ class Ad
      * @ORM\OneToMany(targetEntity="BrowsingHistory", mappedBy="ad")
      */
     private $browsing_history;
+
+    /**
+     * @ORM\Column(name="type_rent",type="string", nullable=false)
+     */
+    private $type_rent;
     public function __construct()
     {
         $this->images = new ArrayCollection();
@@ -125,31 +144,6 @@ class Ad
 
         return $this;
     }
-
-    public function getAddress(): ?string
-    {
-        return $this->address;
-    }
-
-    public function setAddress(string $address): self
-    {
-        $this->address = $address;
-
-        return $this;
-    }
-
-    public function getFlat(): ?int
-    {
-        return $this->flat;
-    }
-
-    public function setFlat(int $flat): self
-    {
-        $this->flat = $flat;
-
-        return $this;
-    }
-
 
     public function getDescription(): ?string
     {
@@ -351,6 +345,78 @@ class Ad
     public function setDistrict(string $district): self
     {
         $this->district = $district;
+
+        return $this;
+    }
+
+    public function getRegion(): ?string
+    {
+        return $this->region;
+    }
+
+    public function setRegion(?string $region): self
+    {
+        $this->region = $region;
+
+        return $this;
+    }
+
+    public function getStreetType(): ?string
+    {
+        return $this->street_type;
+    }
+
+    public function setStreetType(?string $street_type): self
+    {
+        $this->street_type = $street_type;
+
+        return $this;
+    }
+
+    public function getStreet(): ?string
+    {
+        return $this->street;
+    }
+
+    public function setStreet(?string $street): self
+    {
+        $this->street = $street;
+
+        return $this;
+    }
+
+    public function getHouseNumber(): ?string
+    {
+        return $this->house_number;
+    }
+
+    public function setHouseNumber(?string $house_number): self
+    {
+        $this->house_number = $house_number;
+
+        return $this;
+    }
+
+    public function getFlatNumber(): ?string
+    {
+        return $this->flat_number;
+    }
+
+    public function setFlatNumber(?string $flat_number): self
+    {
+        $this->flat_number = $flat_number;
+
+        return $this;
+    }
+
+    public function getTypeRent(): ?string
+    {
+        return $this->type_rent;
+    }
+
+    public function setTypeRent(string $type_rent): self
+    {
+        $this->type_rent = $type_rent;
 
         return $this;
     }

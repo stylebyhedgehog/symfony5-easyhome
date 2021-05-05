@@ -4,12 +4,13 @@
 namespace App\Controller;
 
 
-use App\Data\ApplicationData;
+use App\Data\ApplicationDTO;
 use App\Entity\Application;
 use App\Form\ApplicationFilterType;
 use App\Repository\AdRepository;
 use App\Repository\ApplicationRepository;
 use App\Repository\ClientRepository;
+use App\Service\constants\AdStatus;
 use App\Service\constants\ApplicationStatus;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
@@ -75,10 +76,10 @@ class ApplicationController extends AbstractController
      * @return Response
      */
     public function client_application_sent_all(int $id_user, Request $request){
-        $applicationData= new ApplicationData();
-        $form=$this->createForm(ApplicationFilterType::class,$applicationData);
+        $applicationDTO= new ApplicationDTO();
+        $form=$this->createForm(ApplicationFilterType::class,$applicationDTO);
         $form->handleRequest($request);
-        $applications=$this->applicationRepository->findByFiltersAndAccessType($applicationData,$id_user,"sender");
+        $applications=$this->applicationRepository->findByFiltersAndAccessType($applicationDTO,$id_user,"sender");
         return $this->render('application/applicationSentAll.html.twig',[
            'applications'=>$applications,
             'form'=>$form->createView()
@@ -92,10 +93,10 @@ class ApplicationController extends AbstractController
      * @return Response
      */
     public function client_application_incoming_all(int $id_user, Request $request){
-        $applicationData= new ApplicationData();
-        $form=$this->createForm(ApplicationFilterType::class,$applicationData);
+        $applicationDTO= new ApplicationDTO();
+        $form=$this->createForm(ApplicationFilterType::class,$applicationDTO);
         $form->handleRequest($request);
-        $applications=$this->applicationRepository->findByFiltersAndAccessType($applicationData,$id_user,"owner");
+        $applications=$this->applicationRepository->findByFiltersAndAccessType($applicationDTO,$id_user,"owner");
         return $this->render('application/applicationIncomingAll.html.twig',[
             'applications'=>$applications,
             'form'=>$form->createView()
@@ -111,10 +112,10 @@ class ApplicationController extends AbstractController
      * @return Response
      */
     public function client_application_incoming_by_ad(int $id_user,int $id_ad, Request $request){
-        $applicationData= new ApplicationData();
-        $form=$this->createForm(ApplicationFilterType::class,$applicationData);
+        $applicationDTO= new ApplicationDTO();
+        $form=$this->createForm(ApplicationFilterType::class,$applicationDTO);
         $form->handleRequest($request);
-        $applications=$this->applicationRepository->findByFiltersAndAccessType($applicationData,$id_user,"owner",$id_ad);
+        $applications=$this->applicationRepository->findByFiltersAndAccessType($applicationDTO,$id_user,"owner",$id_ad);
         return $this->render('application/applicationIncomingAll.html.twig',[
             'applications'=>$applications,
             'form'=>$form->createView()
@@ -175,6 +176,10 @@ class ApplicationController extends AbstractController
      */
     public function agent_application_controlled_accept(int $id_user, int $id_application){
         $this->update_status($id_application, ApplicationStatus::$status_accept_agent);
+        $ad= $this->adRepository->find($id_application);
+        $ad->setStatus(AdStatus::$status_wait_deal);
+        $this->entityManager->persist($ad);
+        $this->entityManager->flush();
         return $this->redirectToRoute('client_application_incoming_all',['id_user'=>$id_user]);
     }
 

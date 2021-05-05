@@ -1,8 +1,11 @@
 {% block body %}
 
-    {# Фильтры #}
-        {# Фильтр по цене #}
-
+    <div class="row">
+        <h5>Город</h5>
+        <div id="city_filter" class="input-group mb-3">
+            {{ form_widget(form.city) }}
+        </div>
+    </div>
     <div class="row">
         <h5>Стоимость</h5>
         <div class="input-group mb-3">

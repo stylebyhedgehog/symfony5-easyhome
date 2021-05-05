@@ -1,5 +1,6 @@
 {% extends 'profile.html.twig' %}
 {% block active_block %}
+    <script src="{{ asset('/js/citySelect.js') }}" type="text/javascript"></script>
     {% form_theme form 'bootstrap_4_layout.html.twig' %}
 
     {% if app.user.id==app.request.get('id_user') %}
@@ -7,26 +8,61 @@
             <div class="row justify-content-center">
                 <div class="card bg-light col-4" style="width: 800px">
                     <div class="card-body">
-                        <div class="card-header mb-3">Создать объявление</div>
+                        {% if error is not empty %}
+                            <div class="alert alert-danger" role="alert">
+                                {{ error }}
+                            </div>
+                        {% endif %}
+                        <div class="card-header mb-3">
+                            {% if mode == "create" %}
+                            Создать объявление
+                            {% else %}
+                                Редактировать объявление
+                            {% endif %}
+                        </div>
                         {{ form_start(form) }}
+                        {{ form_row(form.region, { 'label': 'Регион' }) }}
+{#                        TODO КОСТЫЛИ#}
                         {{ form_row(form.city, { 'label': 'Город' }) }}
-
+                           <input id="city_value" disabled hidden value="{{ form.vars.value.city }}">
                         {{ form_row(form.district, { 'label': 'Район' }) }}
+                        <label for="inpg1">Адрес</label>
+                        <div id="inpg1" class="row">
+                            <div class="col-6 d-flex flex-row">
+                                <div class="w-2">
+                                    {{ form_widget(form.street_type,{'attr':{'class':'form-select'}}) }}
+                                </div>
+                                    {{ form_widget(form.street) }}
+                            </div>
+                            <div class="col-3 d-flex flex-row ">
+                                <span class="input-group-text ">д</span>
+                                    {{ form_widget(form.house_number) }}
+                            </div>
+                            <div class="col-3 d-flex flex-row">
+                                <span class="input-group-text ">кв</span>
+                                    {{ form_widget(form.flat_number) }}
+                            </div>
 
-                        {{ form_row(form.address, {'label': 'Адрес'}) }}
-
-                        {{ form_row(form.flat, {'label': 'Квартира'}) }}
+                        </div>
 
                         {{ form_row(form.sqr, { 'label': 'Площадь'}) }}
-
                         {{ form_row(form.description, {'label': 'Описание'}) }}
-
-                        {{ form_row(form.price, { 'label': 'Цена'}) }}
-
+                        <div class="row">
+                            <div class="col">
+                                {{ form_row(form.type_rent, {'label': 'Тип'}) }}
+                            </div>
+                            <div class="col">
+                                {{ form_row(form.price, { 'label': 'Цена'}) }}
+                            </div>
+                        </div>
                         {{ form_row(form.images,{ 'label': 'Изображения'}) }}
-
-                        {{ form_row(form.save,{ 'label': 'Добавить'}) }}
-
+                        <div class="d-flex justify-content-end">
+                            {% if mode == "create" %}
+                                {{ form_row(form.save,{ 'label': 'Добавить'}) }}
+                            {% else %}
+                                {{ form_row(form.save,{ 'label': 'Редактировать'}) }}
+                            {% endif %}
+                        </div>
 
                         {{ form_end(form) }}
                     </div>

@@ -4,9 +4,10 @@
 namespace App\Form;
 
 
-use App\Data\AdData;
+use App\Data\AdDTO;
 use App\Service\constants\AdFilter;
 use App\Service\constants\AdStatus;
+use App\Controller\RegionCityController;
 use Symfony\Component\Form\AbstractType;
 
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -25,6 +26,7 @@ class AdFilterType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $rcService=new RegionCityController();
         //TODO РЕШИТЬ ОШИБКУ С ОШИБКАМИ ПРИ ВЫХОДЕ ЗА STEP
         $builder
             ->add('q', SearchType::class,
@@ -38,7 +40,7 @@ class AdFilterType extends AbstractType
                 $builder
                     ->add('sort_param', ChoiceType::class, [
                         'attr' => [
-                            'class' => 'btn btn-secondary dropdown-toggle shadow-none '
+                            'class' => 'btn dropdown-toggle shadow-none '
                         ],
                         'choices' => AdFilter::$sort_date,
                         'data' => null,
@@ -49,13 +51,23 @@ class AdFilterType extends AbstractType
                 $builder
                     ->add('sort_param', ChoiceType::class, [
                         'attr' => [
-                            'class' => 'btn btn-secondary dropdown-toggle shadow-none '
+                            'class' => 'btn dropdown-toggle shadow-none '
                         ],
                         'choices' => AdFilter::$sort,
 
                     ]);
             }
             $builder
+                ->add('city',ChoiceType::class,[
+                    'attr' => [
+                        'class' => 'btn dropdown-toggle shadow-none '
+                    ],
+                    'choices'=>$rcService->getAllCities(),
+                    'choice_label' => function ($choice, $key, $value) {
+                        return $choice;
+                    },
+
+                ])
             ->add('min_price', IntegerType::class, [
                 'attr' => [
                     'class' => 'form-control shadow-none',
@@ -107,7 +119,7 @@ class AdFilterType extends AbstractType
             ->add('choice_status', ChoiceType::class,
                 [
                     'attr' => [
-                        'class' => 'btn btn-secondary dropdown-toggle shadow-none '
+                        'class' => 'btn dropdown-toggle shadow-none '
                     ],
                     'choices' => AdFilter::$status
                 ]);
@@ -116,7 +128,7 @@ class AdFilterType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => AdData::class,
+            'data_class' => AdDTO::class,
             'mode' => 'all_choices'
         ]);
     }

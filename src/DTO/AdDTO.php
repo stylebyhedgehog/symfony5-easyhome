@@ -4,7 +4,7 @@
 namespace App\Data;
 
 
-class AdData
+class AdDTO
 {
     /**
      * @var string
@@ -16,6 +16,10 @@ class AdData
      */
     public $sort_param;
 
+    /**
+     * @var string|null
+     */
+    public $city;
     /**
      * @var integer|null
      */
