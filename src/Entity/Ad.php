@@ -61,7 +61,7 @@ class Ad
     private $flat_number;
 
     /**
-     * @ORM\Column(name="sqr",type="float", nullable=false)
+     * @ORM\Column(name="sqr",type="string", nullable=false)
      */
     private $sqr;
 
@@ -235,12 +235,12 @@ class Ad
         return $this;
     }
 
-    public function getSqr(): ?float
+    public function getSqr(): ?string
     {
         return $this->sqr;
     }
 
-    public function setSqr(float $sqr): self
+    public function setSqr(string $sqr): self
     {
         $this->sqr = $sqr;
 

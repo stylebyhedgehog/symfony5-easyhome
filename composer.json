@@ -16,6 +16,7 @@
         "doctrine/orm": "^2.8",
         "hflabs/dadata": "^20.12",
         "phpdocumentor/reflection-docblock": "^5.2",
+        "phpoffice/phpword": "^0.18.1",
         "sensio/framework-extra-bundle": "^5.1",
         "symfony/asset": "5.2.*",
         "symfony/console": "5.2.*",

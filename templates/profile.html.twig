@@ -13,7 +13,7 @@
             object-fit: cover;
         }
 
-        .nav-profile , a {
+        .nav-profile, a {
             color: black;
             text-decoration: none;
         }
@@ -51,7 +51,7 @@
                                 {% if is_granted('ROLE_AGENT') %}
                                     <div class="nav-item">
                                         <a class="nav-link nav-profile"
-                                           href="{{ path('agent_ad_all',{'id_user': app.user.id}) }}">
+                                           href="{{ path('agent_ad_controlled',{'id_user': app.user.id}) }}">
                                             Прикрепленные объявления
                                         </a>
                                     </div>
@@ -63,7 +63,6 @@
                                     </div>
                                 {% else %}
                                     <div class="nav-item">
-{#                                        TODO ДОБАВИТЬ ФИЛЬТРЫ#}
                                         <a class="nav-link nav-profile"
                                            href="{{ path('client_ad_own_all',{'id_user': app.user.id}) }}">
                                             Созданные объявления
@@ -88,7 +87,6 @@
                                         </a>
                                     </div>
                                 {% endif %}
-
                             {% endif %}
 
 
@@ -96,16 +94,14 @@
                     </div>
                     {# Блоки с данными #}
                     <div class="col-9 pe-4">
-                        <div class="row mb-2" >
+                        <div class="row mb-2">
                             <div class="col-4">
-                                <small >
-                                        Пользователь № {{ app.request.attributes.get('id_user') }}
-
+                                <small>
+                                    Пользователь № {{ app.request.attributes.get('id_user') }}
                                 </small>
                             </div>
                         </div>
-                            {% block active_block %}{% endblock %}
-
+                        {% block active_block %}{% endblock %}
                     </div>
                 </div>
             </div>

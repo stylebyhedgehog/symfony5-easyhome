@@ -22,3 +22,13 @@ security:
             logout:
                 path: app_logout
                 target: /
+
+    access_control:
+        - { path: '^/ads/recommended', roles: ROLE_USER }
+        - { path: '^/client/*', roles: ROLE_USER }
+
+        # matches /admin/users/*
+        - { path: '^/agent/*', roles: ROLE_AGENT }
+
+        # matches /admin/* except for anything matching the above rule
+        - { path: '^/admin/*', roles: ROLE_ADMIN }

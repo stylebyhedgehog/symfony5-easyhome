@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\ApplicationRepository;
 use App\Service\constants\ApplicationStatus;
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\JoinColumn;
 use Doctrine\ORM\Mapping\ManyToOne;
@@ -52,6 +53,12 @@ class Application
      * @ORM\Column(name="create_date",type="datetime", nullable=false)
      */
     private $create_date;
+
+
+    public function __construct()
+    {
+        $this->create_date = new DateTime();
+    }
 
     public function getId(): ?int
     {

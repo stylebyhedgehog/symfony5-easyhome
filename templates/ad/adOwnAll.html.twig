@@ -1,5 +1,4 @@
 {% extends 'profile.html.twig' %} {% block active_block %}
-    {% if app.user.id==app.request.get('id_user') %}
         <div class="d-flex justify-content-between p-2">
             {# Кнопка Создания нового объявления #}
             <div>
@@ -33,9 +32,7 @@
                 {% endfor %}
             </div>
         {% endif %}
-    {% else %}
-        Ошибка доступа
-    {% endif %}
+
     <script>
         $('#ad_filter_sort_param').change(function (){
             $("#ad_filter_search").click()

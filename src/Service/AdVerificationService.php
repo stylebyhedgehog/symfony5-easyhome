@@ -64,6 +64,7 @@ class AdVerificationService
         }
         return true;
     }
+    //TODO ПРОВЕРКА СООТВЕТСТВИЯ ПЛОЩАДИ flat_area
     function isCorrect(Ad $ad,array $result){
         if($ad->getCity()!=$result["city"] or $ad->getStreet()!=$result["street"]
             or $ad->getHouseNumber()!=$result["house"] or $ad->getFlatNumber()!=$result["flat"]){

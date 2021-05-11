@@ -51,7 +51,6 @@ class FavoriteController extends AbstractController
         return $this->render('favorite/favoriteAll.html.twig', [
             'favorites' =>$favorites
         ]);
-
     }
 
     /**
@@ -60,14 +59,12 @@ class FavoriteController extends AbstractController
      * @return Response
      */
     public function create(Request $request){
-        //TODO РАЗРЕШИТЬ ТОЛЬКО ДЛЯ ХОЗЯИНА
         $favorite=new Favorite();
         $favorite->setClient($this->clientRepository->find($request->get("id_user")));
         $favorite->setAd($this->adRepository->find($request->get("id_ad")));
         $this->entityManager->persist($favorite);
         $this->entityManager->flush();
-        //TODO В ШАБЛОН СО ВСЕМИ ОБЪЯВЛЕНИЯМИ НЕ ДОЛЖЕН УХОДИТЬ id_ad +СДЕЛАТЬ ФОРМОЙ
-        return $this->redirectToRoute($request->get('current_template'),["id_ad"=>$request->get("id_ad")]);
+        return $this->redirect($request->headers->get('referer'));
     }
 
     /**
@@ -79,7 +76,6 @@ class FavoriteController extends AbstractController
         $favorite=$this->favoriteRepository->findOneBy(["ad"=>$request->get("id_ad"),"client"=>$request->get("id_user")]);
         $this->entityManager->remove($favorite);
         $this->entityManager->flush();
-        //TODO В ШАБЛОН СО ВСЕМИ ОБЪЯВЛЕНИЯМИ НЕ ДОЛЖЕН УХОДИТЬ id_ad
-        return $this->redirectToRoute($request->get('current_template'),["id_ad"=>$request->get("id_ad"),"id_user"=>$request->get("id_user")]);
-    }
+        return $this->redirect($request->headers->get('referer'));
+         }
 }

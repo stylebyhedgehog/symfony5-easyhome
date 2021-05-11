@@ -10,11 +10,12 @@ use App\Form\ApplicationFilterType;
 use App\Repository\AdRepository;
 use App\Repository\ApplicationRepository;
 use App\Repository\ClientRepository;
+use App\Service\ApplicationDocumentationService;
 use App\Service\constants\AdStatus;
 use App\Service\constants\ApplicationStatus;
-use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Finder\Exception\AccessDeniedException;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -43,14 +44,14 @@ class ApplicationController extends AbstractController
      */
     public function client_application_create(int $id_user, int $id_ad){
         $application = new Application();
-        $user=$this->clientRepository->find($id_user);
+        $client=$this->clientRepository->find($id_user);
         $ad=$this->adRepository->find($id_ad);
-        $application->setSender($user);
+        $application->setSender($client);
         $application->setOwner($ad->getOwner());
         $application->setAgent($ad->getAgent());
         $application->setAd($ad);
-        $application->setCreateDate(new DateTime());
         $application->setStatus(ApplicationStatus::$status_wait_owner);
+        $this->denyAccessUnlessGranted('create',$application);
         $this->entityManager->persist($application);
         $this->entityManager->flush();
         return $this->redirectToRoute(('general_ad_one'),["id_ad"=>$id_ad]);
@@ -64,6 +65,7 @@ class ApplicationController extends AbstractController
      */
     public function client_application_remove(int $id_user, int $id_ad){
         $application=$this->applicationRepository->findOneBy(['id_sender'=>$id_user,'id_ad'=>$id_ad]);
+        $this->denyAccessUnlessGranted('delete',$application);
         $this->entityManager->remove($application);
         $this->entityManager->flush();
         return $this->redirectToRoute(('general_ad_one'),["id_ad"=>$id_ad]);
@@ -76,6 +78,7 @@ class ApplicationController extends AbstractController
      * @return Response
      */
     public function client_application_sent_all(int $id_user, Request $request){
+        $this->denyAccessUnlessGranted('view_section',$id_user);
         $applicationDTO= new ApplicationDTO();
         $form=$this->createForm(ApplicationFilterType::class,$applicationDTO);
         $form->handleRequest($request);
@@ -90,9 +93,11 @@ class ApplicationController extends AbstractController
      * Входящие заявки
      * @Route ("/client/{id_user}/applications/incoming/", name="client_application_incoming_all")
      * @param int $id_user
+     * @param Request $request
      * @return Response
      */
     public function client_application_incoming_all(int $id_user, Request $request){
+        $this->denyAccessUnlessGranted('view_section',$id_user);
         $applicationDTO= new ApplicationDTO();
         $form=$this->createForm(ApplicationFilterType::class,$applicationDTO);
         $form->handleRequest($request);
@@ -112,6 +117,11 @@ class ApplicationController extends AbstractController
      * @return Response
      */
     public function client_application_incoming_by_ad(int $id_user,int $id_ad, Request $request){
+        $this->denyAccessUnlessGranted('view_section',$id_user);
+        //todo сервис
+        if($this->adRepository->find($id_ad)->getOwner()!==$this->getUser()){
+            throw new AccessDeniedException();
+        }
         $applicationDTO= new ApplicationDTO();
         $form=$this->createForm(ApplicationFilterType::class,$applicationDTO);
         $form->handleRequest($request);
@@ -129,8 +139,14 @@ class ApplicationController extends AbstractController
      * @return RedirectResponse
      */
     public function client_application_incoming_accept(int $id_user, int $id_application){
-//        TODO ВСЕ ЗАЯВКИ ПОМИМО ПРИНЯТОЙ ДОЛЖНЫ БЫТЬ ОТКЛОНЕНЫ ДЛЯ ДАННОГО ОБЪЯВЛЕНИЯ
-        $this->update_status($id_application,ApplicationStatus::$status_wait_agent);
+        $application=$this->applicationRepository->find($id_application);
+        $this->denyAccessUnlessGranted('accept',$application);
+        $applications_connected_with_ad=$application->getAd()->getApplications();
+        foreach ($applications_connected_with_ad as $application_connected){
+            $this->update_status($application_connected, ApplicationStatus::$status_canceled_owner);
+        }
+        $this->update_status($application,ApplicationStatus::$status_wait_agent);
+
         return $this->redirectToRoute('client_application_incoming_all',['id_user'=>$id_user]);
     }
     /**
@@ -140,17 +156,17 @@ class ApplicationController extends AbstractController
      * @return RedirectResponse
      */
     public function client_application_incoming_cancel(int $id_user, int $id_application){
-        $this->update_status($id_application, ApplicationStatus::$status_canceled_owner);
+        $application=$this->applicationRepository->find($id_application);
+        $this->denyAccessUnlessGranted('cancel',$application);
+        $this->update_status($application, ApplicationStatus::$status_canceled_owner);
         return $this->redirectToRoute('client_application_incoming_all',['id_user'=>$id_user]);
     }
 
-    public function update_status(int $id_application, string $status){
-        $application = $this->applicationRepository->find($id_application);
+    public function update_status(Application $application, string $status){
         $application->setStatus($status);
         $this->entityManager->persist($application);
         $this->entityManager->flush();
     }
-
 
     // AGENT SCOPE
 
@@ -160,7 +176,7 @@ class ApplicationController extends AbstractController
      * @return Response
      */
     public function agent_application_controlled(int $id_user){
-        //TODO ОТОБРАЖАТЬ ТОЛЬКО СО СТАТУСОМ ПОДТВЕРЖДЕНО ХОЗЯИНОМ
+        $this->denyAccessUnlessGranted('view_section',$id_user);
         $agent=$this->clientRepository->find($id_user);
         $applications = $agent->getApplicationsControlled();
         return $this->render('application/applicationAgentAll.html.twig',[
@@ -172,15 +188,19 @@ class ApplicationController extends AbstractController
      * @Route ("/agent/{id_user}/applications/controlled/{id_application}/cancel", name="agent_application_controlled_accept")
      * @param int $id_user
      * @param int $id_application
+     * @param ApplicationDocumentationService $applicationDocumentationService
      * @return RedirectResponse
      */
-    public function agent_application_controlled_accept(int $id_user, int $id_application){
-        $this->update_status($id_application, ApplicationStatus::$status_accept_agent);
-        $ad= $this->adRepository->find($id_application);
+    public function agent_application_controlled_accept(int $id_user, int $id_application,ApplicationDocumentationService $applicationDocumentationService){
+        $application=$this->applicationRepository->find($id_application);
+        $this->denyAccessUnlessGranted('accept',$application);
+        $this->update_status($application,ApplicationStatus::$status_accept_agent);
+        $ad= $application->getAd();
         $ad->setStatus(AdStatus::$status_wait_deal);
         $this->entityManager->persist($ad);
         $this->entityManager->flush();
-        return $this->redirectToRoute('client_application_incoming_all',['id_user'=>$id_user]);
+        $applicationDocumentationService->generate($application);
+        return $this->redirectToRoute('agent_application_controlled',['id_user'=>$id_user]);
     }
 
     /**
@@ -190,7 +210,9 @@ class ApplicationController extends AbstractController
      * @return RedirectResponse
      */
     public function agent_application_controlled_cancel(int $id_user, int $id_application){
-        $this->update_status($id_application, ApplicationStatus::$status_canceled_agent);
+        $application=$this->applicationRepository->find($id_application);
+        $this->denyAccessUnlessGranted('cancel',$application);
+        $this->update_status($application, ApplicationStatus::$status_canceled_agent);
         return $this->redirectToRoute('client_application_incoming_all',['id_user'=>$id_user]);
     }
 }

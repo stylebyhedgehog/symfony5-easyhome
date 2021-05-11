@@ -31,18 +31,11 @@
 
         <div class="card-body ">
             <h5 class="card-title">
-                {% if  is_granted('ROLE_AGENT') %}
-                        <a href="{{ path('agent_ad_one', {'id_user':app.user.id,'id_ad': ad.id}) }}">
-                            {{ ad.city ~", "~ ad.street ~", "~ ad.sqr }}
-                            <span style="white-space: nowrap;"> м<sup>2</sup></span>
-                        </a>
 
-                        {% else%}
-                            <a  href="{{ path('general_ad_one', {'id_ad': ad.id}) }}">
-                                <span class="address_field">{{"г. "~ ad.city ~", "~ad.streetType ~" "~ ad.street~", "~ad.houseNumber}}</span>
-                                {{", "~ ad.sqr }}<span style="white-space: nowrap;"> м<sup>2</sup></span>
-                            </a>
-                    {% endif %}
+                <a href="{{ path('general_ad_one', {'id_ad': ad.id}) }}">
+                    <span class="address_field">{{ "г. "~ ad.city ~", "~ad.streetType ~" "~ ad.street~", "~ad.houseNumber }}</span>
+                    {{ ", "~ ad.sqr }}<span style="white-space: nowrap;"> м<sup>2</sup></span>
+                </a>
 
 
             </h5>
@@ -56,7 +49,7 @@
                         {% else %}
                             {# TODO ПРИ НАЖАТИИ НА СЕРДЕЧКО ФОРМА ФИЛЬТРОВ СОХРАНЯЕТСЯ #}
                             {% if current_template=="client_favorite_all" or ad in  app.user.favoriteAds %}
-                                <a href="{{ path('client_favorite_remove', {'id_ad': ad.id, 'id_user': app.user.id, 'current_template':current_template}) }}">
+                                <a href="{{ path('client_favorite_remove', {'id_ad': ad.id, 'id_user': app.user.id}) }}">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16"
                                          height="16" fill="currentColor"
                                          class="bi bi-heart-fill" viewBox="0 0 16 16">
@@ -65,7 +58,7 @@
                                     </svg>
                                 </a>
                             {% else %}
-                                <a href="{{ path('client_favorite_create', {'id_ad': ad.id, 'id_user': app.user.id, 'current_template':current_template }) }}">
+                                <a href="{{ path('client_favorite_create', {'id_ad': ad.id, 'id_user': app.user.id }) }}">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16"
                                          height="16" fill="currentColor" class="bi bi-heart"
                                          viewBox="0 0 16 16">

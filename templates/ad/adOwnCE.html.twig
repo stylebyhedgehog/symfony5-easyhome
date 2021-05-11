@@ -3,7 +3,6 @@
     <script src="{{ asset('/js/citySelect.js') }}" type="text/javascript"></script>
     {% form_theme form 'bootstrap_4_layout.html.twig' %}
 
-    {% if app.user.id==app.request.get('id_user') %}
         <div class="card bg-light col-10 mb-4">
             <div class="card-body">
                 {% if error is not empty %}
@@ -77,7 +76,5 @@
                 {{ form_end(form) }}
             </div>
         </div>
-    {% else %}
-        Ошибка доступа
-    {% endif %}
+
 {% endblock %}

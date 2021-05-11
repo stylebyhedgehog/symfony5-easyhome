@@ -4,7 +4,8 @@ function init() {
 
     myMap = new ymaps.Map('map', {
         center: [55.8021303942946, 49.106238365611695],
-        zoom : 12
+        zoom : 12,
+        controls: ['zoomControl']
     });
     $('.address_field').each(function (){
         var currentElement = $(this);

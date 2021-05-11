@@ -30,7 +30,9 @@
                     </a>
                 </div>
                 <div class="col-2">
-                    {{ application.sender }}
+                    <a href="{{ path('client_personal_data',{'id_user':application.sender.id}) }}">
+                        {{ application.sender }}
+                    </a>
                 </div>
                 <div class="col-3">
                     {{ application.status }}
@@ -40,9 +42,7 @@
                 </div>
 
                 {% if application.statusNumber == 1 %}
-
                     <div class="col-1">
-
                         <a href="{{ path('client_application_incoming_cancel',{'id_user':app.user.id, 'id_application': application.id}) }}">
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
                                  class="bi bi-x-circle" viewBox="0 0 16 16">
@@ -62,8 +62,6 @@
                     </div>
                     </div>
                 {% endif %}
-
-
             {% endfor %}
         {% endif %}
 

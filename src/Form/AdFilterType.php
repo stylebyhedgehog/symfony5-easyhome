@@ -21,12 +21,11 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 
-
 class AdFilterType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $rcService=new RegionCityController();
+        $rcService = new RegionCityController();
         //TODO РЕШИТЬ ОШИБКУ С ОШИБКАМИ ПРИ ВЫХОДЕ ЗА STEP
         $builder
             ->add('q', SearchType::class,
@@ -35,39 +34,24 @@ class AdFilterType extends AbstractType
                     'aria-describedby' => 'basic-addon2',
                     'aria-label' => 'Recipients username'
                 ],
-                    'required' => false]);
-            if ($options['mode'] == "date_choices"){
-                $builder
-                    ->add('sort_param', ChoiceType::class, [
-                        'attr' => [
-                            'class' => 'btn dropdown-toggle shadow-none '
-                        ],
-                        'choices' => AdFilter::$sort_date,
-                        'data' => null,
+                    'required' => false])
+            ->add('sort_param', ChoiceType::class, [
+                'attr' => [
+                    'class' => 'btn dropdown-toggle shadow-none '
+                ],
+                'choices' => AdFilter::$sort,
 
-                    ]);
-            }
-            else{
-                $builder
-                    ->add('sort_param', ChoiceType::class, [
-                        'attr' => [
-                            'class' => 'btn dropdown-toggle shadow-none '
-                        ],
-                        'choices' => AdFilter::$sort,
+            ])
+            ->add('city', ChoiceType::class, [
+                'attr' => [
+                    'class' => 'btn dropdown-toggle shadow-none '
+                ],
+                'choices' => $rcService->getAllCities(),
+                'choice_label' => function ($choice, $key, $value) {
+                    return $choice;
+                },
 
-                    ]);
-            }
-            $builder
-                ->add('city',ChoiceType::class,[
-                    'attr' => [
-                        'class' => 'btn dropdown-toggle shadow-none '
-                    ],
-                    'choices'=>$rcService->getAllCities(),
-                    'choice_label' => function ($choice, $key, $value) {
-                        return $choice;
-                    },
-
-                ])
+            ])
             ->add('min_price', IntegerType::class, [
                 'attr' => [
                     'class' => 'form-control shadow-none',
