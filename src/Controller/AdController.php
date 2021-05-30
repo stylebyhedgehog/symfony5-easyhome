@@ -3,25 +3,22 @@
 namespace App\Controller;
 
 
-use App\Data\AdDTO;
 use App\Entity\Ad;
-use App\Entity\AdImage;
+use App\Entity\AdDto;
 use App\Form\AdFilterType;
 use App\Form\AdType;
 use App\Repository\AdRepository;
-use App\Repository\BrowsingHistoryRepository;
 use App\Repository\ClientRepository;
-use App\Repository\FavoriteRepository;
 use App\Service\AdAgentService;
 use App\Service\AdRecommendationService;
 use App\Service\AdVerificationService;
 use App\Service\constants\AdStatus;
+use App\Service\FileUploaderService;
 use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -31,16 +28,12 @@ class AdController extends AbstractController
     private $adRepository;
     private $entityManager;
     private $clientRepository;
-    private $favoriteRepository;
-    private $browsingHistoryRepository;
 
-    public function __construct(BrowsingHistoryRepository $browsingHistoryRepository, FavoriteRepository $favoriteRepository, ClientRepository $clientRepository, AdRepository $adRepository, EntityManagerInterface $entityManager)
+    public function __construct( ClientRepository $clientRepository, AdRepository $adRepository, EntityManagerInterface $entityManager)
     {
-        $this->favoriteRepository = $favoriteRepository;
         $this->adRepository = $adRepository;
         $this->entityManager = $entityManager;
         $this->clientRepository = $clientRepository;
-        $this->browsingHistoryRepository = $browsingHistoryRepository;
     }
 
     /**
@@ -48,9 +41,9 @@ class AdController extends AbstractController
      * @param Request $request
      * @return Response
      */
-    public function general_ad_all(Request $request)
+    public function general_ad_all(Request $request): Response
     {
-        $data = new AdDTO();
+        $data = new AdDto();
         $form = $this->createForm(AdFilterType::class, $data);
         $form->handleRequest($request);
         $ads = $this->adRepository->findAllAdsByFilters($data);
@@ -61,7 +54,7 @@ class AdController extends AbstractController
     }
 
     /**
-     * @Route("/ads/{id_ad}", name="general_ad_one")
+     * @Route("/ads/{id_ad<\d+>}", name="general_ad_one")
      * @param int $id_ad
      * @param Request $request
      * @param AdRecommendationService $adRecommendationService
@@ -88,7 +81,6 @@ class AdController extends AbstractController
             ]);
         }
     }
-//TODO ВМЕСТО ФОРМЫ ЛИНКИ
     public function update_status(Ad $ad, Request $request)
     {
         $form = $this->createFormBuilder($ad)
@@ -116,7 +108,7 @@ class AdController extends AbstractController
     public function general_ad_all_recommended(Request $request, AdRecommendationService $adRecommendationService)
     {
         $this->denyAccessUnlessGranted('ROLE_USER');
-        $data = new AdDTO();
+        $data = new AdDto();
         $form = $this->createForm(AdFilterType::class, $data);
         $form->handleRequest($request);
         $recommendation = $adRecommendationService->getRecommendation($this->getUser());
@@ -136,7 +128,7 @@ class AdController extends AbstractController
     public function agent_ad_controlled(Request $request,int $id_user)
     {
         $this->denyAccessUnlessGranted('view_section',$id_user);
-        $data = new AdDTO();
+        $data = new AdDto();
         $form = $this->createForm(AdFilterType::class, $data);
         $form->handleRequest($request);
         $ads = $this->adRepository->findControlledAdsByFilters($data, $id_user);
@@ -156,7 +148,7 @@ class AdController extends AbstractController
     public function client_ad_own_all(Request $request,int $id_user)
     {
         $this->denyAccessUnlessGranted('view_section',$id_user);
-        $adDTO = new AdDTO();
+        $adDTO = new AdDto();
         $form = $this->createForm(AdFilterType::class, $adDTO);
         $form->handleRequest($request);
         $ads = $this->adRepository->findPostedAdsByFilters($adDTO, $id_user);
@@ -170,49 +162,37 @@ class AdController extends AbstractController
     /**
      * @Route("/client/{id_user}/ads/own/create", name="client_ad_own_create")
      * @param Request $request
+     * @param FileUploaderService $fileUploadService
      * @param AdAgentService $adService
+     * @param AdVerificationService $adVerificationService
+     * @param AdRepository $adRepository
      * @return Response
      */
-    //TODO отдельный сервис для загрузки файлов
-    public function client_ad_own_create(Request $request, AdAgentService $adService, AdVerificationService $adVerificationService, AdRepository $adRepository)
+
+    public function client_ad_own_create(Request $request, FileUploaderService $fileUploadService,AdAgentService $adService, AdVerificationService $adVerificationService, AdRepository $adRepository)
     {
-        //TODO РЕДИРЕКТ НА ЛИЧНЫЕ ДАННЫЕ ПРИ ПОПЫТКЕ
         $error = "";
         $ad = new Ad();
         $form = $this->createForm(AdType::class, $ad);
         $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $error = $adVerificationService->mock($ad);
+        if ($form->isSubmitted() and $form->isValid()){
+            $error = $adVerificationService->checkAddress($ad);
             if ($error != null) {
                 return $this->render('ad/adOwnCE.html.twig', [
                     'form' => $form->createView(),
                     'error' => $error
                 ]);
             }
-            $owner = $this->clientRepository->find($request->get("id_user"));
+            $owner = $this->getUser();
             $ad->setOwner($owner);
             $current_time = new DateTime();
             $agent = $adService->getAgent($this->clientRepository, $this->adRepository);
             $ad->setAgent($agent);
-            $ad->setCreateDate($current_time);
             $ad->setUpdateDate($current_time);
             $ad->setStatus(AdStatus::$status_wait);
             $this->denyAccessUnlessGranted('create',$ad);
             $images = $form->get('images')->getData();
-            $upload_directory = "images";
-
-            foreach ($images as $image) {
-                $imageAd = new AdImage();
-                //TODO ШИФРОВАТЬ
-                $originalFilename = $image->getClientOriginalName();
-                $image->move(
-                    $upload_directory,
-                    $originalFilename
-                );
-                $imageAd->setFilename($originalFilename);
-                $ad->addImage($imageAd);
-            }
+            $fileUploadService->uploadImage($images,$ad);
             $this->entityManager->persist($ad);
             $this->entityManager->flush();
             return $this->redirectToRoute('client_ad_own_all', ['id_user' => $request->get("id_user")]);
@@ -226,20 +206,36 @@ class AdController extends AbstractController
 
     /**
      * @Route("/client/{id_user}/ads/own/{id_ad}/update", name="client_ad_own_update")
+     * @param AdVerificationService $adVerificationService
+     * @param FileUploaderService $fileUploaderService
      * @param Request $request
      * @param int $id_ad
      * @return Response
      */
-    public function client_ad_own_update(Request $request, int $id_ad)
+    public function client_ad_own_update(AdVerificationService $adVerificationService, FileUploaderService $fileUploaderService,Request $request, int $id_ad)
     {
-        //TODO ПОДГРУЗКА КАРТИНКИ + статус ожидает проверки
         $ad = $this->adRepository->find($id_ad);
         $this->denyAccessUnlessGranted('edit', $ad);
         $form = $this->createForm(AdType::class, $ad);
-        $form->get('images')->setData(
-            new File("images" . '/' . "1.jpg"));
         $form->handleRequest($request);
-
+        if ($form->isSubmitted() and $form->isValid()){
+            $error = $adVerificationService->mock($ad);
+            if ($error != null) {
+                return $this->render('ad/adOwnCE.html.twig', [
+                    'form' => $form->createView(),
+                    'error' => $error
+                ]);
+            }
+            $current_time = new DateTime();
+            $ad->setUpdateDate($current_time);
+            $ad->setStatus(AdStatus::$status_wait);
+            $this->denyAccessUnlessGranted('create',$ad);
+            $images = $form->get('images')->getData();
+            $fileUploaderService->uploadImage($images,$ad);
+            $this->entityManager->persist($ad);
+            $this->entityManager->flush();
+            return $this->redirectToRoute('client_ad_own_all', ['id_user' => $request->get("id_user")]);
+        }
         return $this->render('ad/adOwnCE.html.twig', [
             'form' => $form->createView(),
             'error' => null,
@@ -252,15 +248,13 @@ class AdController extends AbstractController
      * @param int $id_ad
      * @return Response
      */
-    //TODO УДАЛЕНИЕ ФАЙЛА КАРТИНКИ ПРИ УДАЛЕНИИ ОБЪЯВЛЕНИЯ
-    public function client_ad_own_delete(int $id_ad)
+    public function client_ad_own_delete(int $id_ad,FileUploaderService $fileUploaderService)
     {
         $ad = $this->adRepository->find($id_ad);
         $this->denyAccessUnlessGranted('delete', $ad);
         $this->entityManager->remove($ad);
         $this->entityManager->flush();
-
-//https://symfony.com/doc/current/components/filesystem.html#remove
+        $fileUploaderService->removeImagesByAd($ad);
         return $this->redirectToRoute('general_ad_all');
     }
 

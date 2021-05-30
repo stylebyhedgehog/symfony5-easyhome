@@ -1,0 +1,2 @@
+INSERT INTO public.review (id, rater_id, client_id, text, rating, create_date) VALUES (1, 8, 6, 'яя', 4, '2021-05-30 12:23:19');
+INSERT INTO public.review (id, rater_id, client_id, text, rating, create_date) VALUES (2, 9, 6, '....', 5, '2021-05-30 12:29:45');

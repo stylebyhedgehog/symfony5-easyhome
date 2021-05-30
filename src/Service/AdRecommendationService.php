@@ -4,7 +4,7 @@
 namespace App\Service;
 
 
-use App\DTO\RecommendationDTO;
+use App\Entity\RecommendationDTO;
 use App\Entity\Ad;
 use App\Entity\BrowsingHistory;
 use App\Entity\Client;
@@ -42,19 +42,27 @@ class AdRecommendationService
     public function getRecommendation(UserInterface $client)
     {
         $watched_ads = $client->getBrowsingHistoryAd()->toArray();
+        $recommendation = new RecommendationDTO();
+        if (empty($watched_ads)){return $recommendation;}
+        else{
         $district = $this->max_attribute_in_array($watched_ads, 'getDistrict');
         $city = $this->max_attribute_in_array($watched_ads, 'getCity');
-        $recommendation = new RecommendationDTO();
         $recommendation->district = $district;
         $recommendation->city = $city;
-        return $recommendation;
+        return $recommendation;}
     }
-
     private function max_attribute_in_array($array, $prop)
     {
-        return max(array_map(function ($o) use ($prop) {
-            return $o->$prop();
+        $arr_with_total=(array_map(function ($o) use ($prop) {
+            if($o->$prop()!=null){
+                return $o->$prop();
+            }
+            else {return '';}
         },
             $array));
+        $arr_with_max_count=array_count_values($arr_with_total);
+        $maxVal = max($arr_with_max_count);
+        $maxKey = array_search($maxVal, $arr_with_max_count);
+        return $maxKey;
     }
 }

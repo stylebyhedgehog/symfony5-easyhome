@@ -2,8 +2,8 @@
 
 namespace App\Repository;
 
-use App\Data\AdDTO;
-use App\DTO\RecommendationDTO;
+use App\Entity\AdDto;
+use App\Entity\RecommendationDTO;
 use App\Entity\Ad;
 use App\Service\constants\AdFilter;
 use App\Service\constants\AdStatus;
@@ -24,7 +24,7 @@ class AdRepository extends ServiceEntityRepository
         parent::__construct($registry, Ad::class);
     }
 
-    public function findControlledAdsByFilters(AdDTO $adDTO, int $id_user){
+    public function findControlledAdsByFilters(AdDto $adDTO, int $id_user){
         $query = $this
             ->createQueryBuilder('a')
             ->where('a.agent = :id_user')
@@ -33,7 +33,7 @@ class AdRepository extends ServiceEntityRepository
         return $this->filterStatusDate($query,$adDTO);
     }
 
-    public function findPostedAdsByFilters(AdDTO $adDTO, int $id_user){
+    public function findPostedAdsByFilters(AdDto $adDTO, int $id_user){
         $query = $this
             ->createQueryBuilder('a')
             ->where('a.owner = :id_user')
@@ -44,10 +44,10 @@ class AdRepository extends ServiceEntityRepository
 
     /**
      * @param QueryBuilder $query
-     * @param AdDTO $adDTO
+     * @param AdDto $adDTO
      * @return null
      */
-    public function filterStatusDate(QueryBuilder $query,AdDTO $adDTO)
+    public function filterStatusDate(QueryBuilder $query, AdDto $adDTO)
     {
         if (!empty($adDTO->choice_status) and $adDTO->choice_status != 5) {
             $query = $query
@@ -68,20 +68,20 @@ class AdRepository extends ServiceEntityRepository
         return $query->getQuery()->getResult();
     }
 
-    public function findRecommendAdsByFilters(AdDTO $adDTO,RecommendationDTO $recommendationDTO){
+    public function findRecommendAdsByFilters(AdDto $adDTO, RecommendationDTO $recommendationDTO){
         $query = $this
             ->createQueryBuilder('a')
             ->where('a.status = :status')
             ->setParameter('status', AdStatus::$status_ok)
             ->andWhere('a.city = :city')
-            ->setParameter('city',"%{$recommendationDTO->city}%")
+            ->setParameter('city',$recommendationDTO->city)
             ->andWhere('a.district = :district')
-            ->setParameter('district',"%{$recommendationDTO->district}%")
+            ->setParameter('district',$recommendationDTO->district)
             ->orderBy('a.update_date', 'DESC');
         return $this->filterGlobal($query,$adDTO);
     }
 
-    public function findAllAdsByFilters(AdDTO $adDTO){
+    public function findAllAdsByFilters(AdDto $adDTO){
         $query = $this
             ->createQueryBuilder('a')
             ->where('a.status = :status')
@@ -92,19 +92,19 @@ class AdRepository extends ServiceEntityRepository
 
     /**
      * @param QueryBuilder $query
-     * @param AdDTO $adDTO
+     * @param AdDto $adDTO
      * @return Ad[]
      */
-    public function filterGlobal(QueryBuilder $query,AdDTO $adDTO)
+    public function filterGlobal(QueryBuilder $query, AdDto $adDTO)
     {
         if (!empty($adDTO->q)) {
             $query = $query
                 ->andWhere('a.city LIKE :q')
-                ->setParameter('q', "%{$adDTO->q}%")
+                ->setParameter('q', $adDTO->q)
                 ->orWhere('a.street LIKE :q')
-                ->setParameter('q', "%{$adDTO->q}%");
+                ->setParameter('q', $adDTO->q);
         }
-        if (!empty($adDTO->city)) {
+        if (!empty($adDTO->city) and empty($adDTO->q) and $adDTO->city!='.Все') {
             $query = $query
                 ->andWhere('a.city = :city')
                 ->setParameter('city', $adDTO->city);

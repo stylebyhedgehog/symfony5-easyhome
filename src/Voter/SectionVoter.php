@@ -33,7 +33,6 @@ class SectionVoter extends Voter
 
     protected function voteOnAttribute(string $attribute, $subject, TokenInterface $token)
     {
-        //TODO АГЕНТЫ
         $user = $token->getUser();
         if ($user instanceof UserInterface) {
             if ($this->security->isGranted('ROLE_ADMIN')) {

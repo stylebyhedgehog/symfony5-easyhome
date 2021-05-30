@@ -29,7 +29,7 @@ class AdVerificationService
     }
     function checkAddress(Ad $ad){
         if (!$this->uniqCheck($ad)){
-            return $error="Объявление с данным адресом уже размещено";
+            return "Объявление с данным адресом уже размещено";
         }
         $city=$ad->getCity();
         $street_type=$ad->getStreetType();
@@ -38,10 +38,10 @@ class AdVerificationService
         $flat=$ad->getFlatNumber();
         $result = $this->getDataByAddress($city,$street_type,$street,$house,$flat);
         if (!$this->isExist($result)){
-            return $error="Введенного Вами адреса не существет";
+            return "Введенного Вами адреса не существет";
         }
         if(!$this->isCorrect($ad,$result)){
-            return $error="Некорректный адрес (Возможно Вы имели в виду: ".$result["result"].")";
+            return "Некорректный адрес (Возможно Вы имели в виду: ".$result["result"].")";
         }
         return null;
     }
@@ -57,14 +57,13 @@ class AdVerificationService
         return true;
     }
 
-
     function isExist(array $result){
         if(empty($result["city"]) or empty($result["street"]) or empty($result["house"])){
             return false;
         }
         return true;
     }
-    //TODO ПРОВЕРКА СООТВЕТСТВИЯ ПЛОЩАДИ flat_area
+
     function isCorrect(Ad $ad,array $result){
         if($ad->getCity()!=$result["city"] or $ad->getStreet()!=$result["street"]
             or $ad->getHouseNumber()!=$result["house"] or $ad->getFlatNumber()!=$result["flat"]){

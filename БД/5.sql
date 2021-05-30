@@ -1,0 +1,11 @@
+INSERT INTO public.browsing_history (id, client_id, ad_id, create_date) VALUES (2, 9, 3, '2021-05-30 12:28:28');
+INSERT INTO public.browsing_history (id, client_id, ad_id, create_date) VALUES (3, 10, 6, '2021-05-30 12:35:04');
+INSERT INTO public.browsing_history (id, client_id, ad_id, create_date) VALUES (4, 10, 5, '2021-05-30 12:35:07');
+INSERT INTO public.browsing_history (id, client_id, ad_id, create_date) VALUES (6, 10, 3, '2021-05-30 12:35:13');
+INSERT INTO public.browsing_history (id, client_id, ad_id, create_date) VALUES (7, 6, 5, '2021-05-30 12:44:34');
+INSERT INTO public.browsing_history (id, client_id, ad_id, create_date) VALUES (8, 10, 7, '2021-05-30 12:46:18');
+INSERT INTO public.browsing_history (id, client_id, ad_id, create_date) VALUES (9, 9, 7, '2021-05-30 13:20:56');
+INSERT INTO public.browsing_history (id, client_id, ad_id, create_date) VALUES (11, 10, 8, '2021-05-30 13:54:51');
+INSERT INTO public.browsing_history (id, client_id, ad_id, create_date) VALUES (12, 6, 6, '2021-05-30 14:01:44');
+INSERT INTO public.browsing_history (id, client_id, ad_id, create_date) VALUES (13, 10, 11, '2021-05-30 14:05:02');
+INSERT INTO public.browsing_history (id, client_id, ad_id, create_date) VALUES (14, 10, 10, '2021-05-30 14:05:50');

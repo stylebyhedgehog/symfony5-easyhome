@@ -9,8 +9,6 @@ use App\Repository\ClientRepository;
 
 class AdAgentService
 {
-    //TODO обработка ошибок
-    //Поиск агента с наименьшей занятостью (статус объявления
 
     public function getAgent(ClientRepository $clientRepository, AdRepository $adRepository){
         $clients=$clientRepository->findAll();

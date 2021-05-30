@@ -1,5 +1,5 @@
 <div class="col">
-    <div class="card shadow-sm  ">
+    <div class="card shadow-sm ad-ell-wrapper">
         <div id="carouselExampleIndicators{{ ad.id }}"
              class="carousel slide card-img-top">
             <div class="carousel-indicators">
@@ -32,22 +32,21 @@
         <div class="card-body ">
             <h5 class="card-title">
 
-                <a href="{{ path('general_ad_one', {'id_ad': ad.id}) }}">
-                    <span class="address_field">{{ "г. "~ ad.city ~", "~ad.streetType ~" "~ ad.street~", "~ad.houseNumber }}</span>
+                <a  href="{{ path('general_ad_one', {'id_ad': ad.id}) }}">
+                    <span id="{{ad.id}}" class="address_field">{{ "г. "~ ad.city ~", "~ad.streetType ~" "~ ad.street~", "~ad.houseNumber }}</span>
                     {{ ", "~ ad.sqr }}<span style="white-space: nowrap;"> м<sup>2</sup></span>
                 </a>
 
 
             </h5>
 
-            <p class="card-text">{{ ad.price|number_format(0, '.', ' ') }}р</p>
+            <p id="price{{ad.id}}" class="card-text">{{ ad.price|number_format(0, '.', ' ') }} р</p>
             <div class="d-flex justify-content-between align-items-center">
                 <div class="btn-group">
                     {% if app.user %}
                         {% if ad.owner.id == app.user.id or is_granted('ROLE_AGENT') %}
                             {{ ad.status }}
                         {% else %}
-                            {# TODO ПРИ НАЖАТИИ НА СЕРДЕЧКО ФОРМА ФИЛЬТРОВ СОХРАНЯЕТСЯ #}
                             {% if current_template=="client_favorite_all" or ad in  app.user.favoriteAds %}
                                 <a href="{{ path('client_favorite_remove', {'id_ad': ad.id, 'id_user': app.user.id}) }}">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16"
@@ -70,7 +69,7 @@
 
                     {% endif %}
                 </div>
-                <small class="text-muted">{{ ad.updateDate|date_interval }}</small>
+                <small id="updateDate{{ad.id}}" class="text-muted">{{ ad.updateDate|date_interval }}</small>
             </div>
         </div>
     </div>

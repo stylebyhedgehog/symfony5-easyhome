@@ -1,0 +1,1 @@
+INSERT INTO public.favorite (id, client_id, ad_id) VALUES (3, 10, 6);

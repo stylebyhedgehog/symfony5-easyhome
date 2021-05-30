@@ -4,7 +4,7 @@
 namespace App\Form;
 
 
-use App\Data\ApplicationDTO;
+use App\Entity\ApplicationDTO;
 use App\Service\constants\AdFilter;
 use App\Service\constants\ApplicationFilter;
 use Symfony\Component\Form\AbstractType;
@@ -19,7 +19,6 @@ class ApplicationFilterType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        //TODO ВОЗМОЖНОСТЬ ОТОБРАЖАТЬ ВХОДЯЩИЕ ЗАЯВКИ ПО ОБЪЯВЛЕНИЯМ
         $builder
             ->add('sort_param', ChoiceType::class, [
                 'attr' => [

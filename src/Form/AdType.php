@@ -14,6 +14,8 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Regex;
@@ -30,17 +32,12 @@ class AdType extends AbstractType
                     'choices' => $rcService->getAllRegions(),
                     'choice_label' => function ($choice, $key, $value) {
                         return $value;
-                    },
-                    'constraints' => [
-                        new NotBlank(['message' => 'Выберите регион']),
-                    ]
+                    }
                 ])
             ->add('city', ChoiceType::class,
                 [
                     'data' => $builder->getData()->getCity(),
-                    'constraints' => [
-                        new NotBlank(['message' => 'Выберите город']),
-                    ]
+                    'choices'=>$rcService->getAllCities()
                 ])
             ->add('district', TextType::class)
             ->add('street_type', ChoiceType::class,
@@ -50,38 +47,15 @@ class AdType extends AbstractType
                         return $value;
                     }
                 ])
-            ->add('street', TextType::class,
-                [
-                    'constraints' => [
-                        new NotBlank(['message' => 'Выберите улицу']),
-                    ]
-                ])
-            ->add('house_number', TextType::class,
-                ['constraints' =>
-                    [
-                        new NotBlank(['message' => 'Выберите номер дома']),
-                        new Regex('(\d+[a-z/\d]*)', "Неправильный формат")
-                    ]
-                ])
+            ->add('street', TextType::class)
+            ->add('house_number', TextType::class)
             ->add('flat_number', TextType::class,
                 [
                     'attr' => ['novalidate' => 'novalidate'],
                 ])
-            ->add('sqr', TextType::class,
-                [
-                    'constraints' =>
-                        [
-                            new NotBlank(['message' => 'Выберите площадь']),
-                            new Regex('/^[0-9]*[.]?[0-9]+$/', "Неправильный формат")
-                        ]
-                ]
+            ->add('sqr', TextType::class
             )
-            ->add('description', TextareaType::class,
-                [
-                    'constraints' => [
-                        new NotBlank(['message' => 'Добавьте описание']),
-                    ]
-                ])
+            ->add('description', TextareaType::class)
             ->add('type_rent', ChoiceType::class,
                 [
                     'choices' => AdTypeRent::typeRent(),
@@ -90,12 +64,7 @@ class AdType extends AbstractType
                     }
 
                 ])
-            ->add('price', IntegerType::class,
-                [
-                    'constraints' => [
-                        new NotBlank(['message' => 'Добавьте стоимость']),
-                    ]
-                ])
+            ->add('price', IntegerType::class)
             ->add('images', FileType::class,
                 [
                     'multiple' => true,

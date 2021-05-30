@@ -10,6 +10,7 @@ use App\Form\ReviewType;
 use App\Repository\ClientRepository;
 use App\Repository\ReviewRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Finder\Exception\AccessDeniedException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -68,6 +69,7 @@ class ReviewController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $review->setRater($this->getUser());
             $review->setClient($this->clientRepository->find($id_user));
+            if ($review->getRater()===$review->getClient()){throw new AccessDeniedException();}
             $this->entityManager->persist($review);
             $this->entityManager->flush();
         }

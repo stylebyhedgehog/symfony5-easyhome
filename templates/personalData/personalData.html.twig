@@ -1,4 +1,5 @@
-{% extends 'profile.html.twig' %} {% block active_block %}
+{% extends 'profile.html.twig' %} {% block title %}Личный кабинет{% endblock %}
+{% block active_block %}
     {% if app.user.id==app.request.get('id_user') %}
 
         {% if personal_data is empty %}
@@ -8,6 +9,9 @@
                 </div>
             </a>
         {% else %}
+            <div class="mb-3">
+                E-mail: {{ personal_data.client }}
+            </div>
             <div class="mb-3">
                 Имя: {{ personal_data.name }}
             </div>

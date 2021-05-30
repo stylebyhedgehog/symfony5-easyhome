@@ -26,4 +26,3 @@ function ajax_by_region(region,mode="create") {
         }
     });
 }
-//TODO КОСТЫЛИ КОСТЫЛИ КОСТЫЛИ

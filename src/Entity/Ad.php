@@ -27,10 +27,12 @@ class Ad
     private $id;
 
     /**
+     * @Assert\NotBlank(message="Выберите регион")
      * @ORM\Column(name="region",type="string", nullable=false, length=150)
      */
     private $region;
     /**
+     * @Assert\NotBlank(message="Выберите город")
      * @ORM\Column(name="city",type="string", nullable=false, length=150)
      */
     private $city;
@@ -41,36 +43,45 @@ class Ad
     private $district;
 
     /**
+     * @Assert\NotBlank(message="Выберите тип")
      * @ORM\Column(name="street_type",type="string", nullable=false, length=150)
      */
     private $street_type;
 
     /**
+     * @Assert\NotBlank(message="Заполните поле")
      * @ORM\Column(name="street",type="string", nullable=false, length=150)
      */
     private $street;
 
     /**
+     * @Assert\NotBlank(message="Заполните поле")
+     * @Assert\Regex("(\d+[a-z/\d]*)", message="формат")
      * @ORM\Column(name="house_number",type="string", nullable=false, length=150)
      */
     private $house_number;
 
     /**
+     * @Assert\Regex("(\d+[a-z/\d]*)", message="формат")
      * @ORM\Column(name="flat_number",type="string", nullable=true)
      */
     private $flat_number;
 
     /**
+     * @Assert\NotBlank(message="Введите площадь")
+     * @Assert\Regex("/^[0-9]*[.]?[0-9]+$/", message="Неправильный формат")
      * @ORM\Column(name="sqr",type="string", nullable=false)
      */
     private $sqr;
 
     /**
+     * @Assert\NotBlank(message="Добавьте описание")
      * @ORM\Column(name="description",type="text", nullable=false)
      */
     private $description;
 
     /**
+     * @Assert\NotBlank(message="Добавьте стоимость")
      * @ORM\Column(name="price",type="integer", nullable=false)
      */
     private $price;
@@ -98,7 +109,6 @@ class Ad
     private $create_date;
 
     /**
-
      * @ORM\Column(name="update_date",type="datetime", nullable=false)
      */
     private $update_date;
@@ -119,6 +129,7 @@ class Ad
     private $browsing_history;
 
     /**
+     * @Assert\NotBlank(message="Выберите тип")
      * @ORM\Column(name="type_rent",type="string", nullable=false)
      */
     private $type_rent;
@@ -127,6 +138,7 @@ class Ad
         $this->images = new ArrayCollection();
         $this->applications = new ArrayCollection();
         $this->browsing_history = new ArrayCollection();
+        $this->create_date = new DateTime();
     }
     public function getId(): ?int
     {

@@ -1,10 +1,10 @@
 <?php
 
 
-namespace App\Data;
+namespace App\Entity;
 
 
-class AdDTO
+class AdDto
 {
     /**
      * @var string

@@ -1,4 +1,4 @@
-{% extends 'profile.html.twig' %} {% block active_block %}
+{% extends 'profile.html.twig' %} {% block title %}Отзывы{% endblock %}{% block active_block %}
 
     {% if app.user.id != app.request.get('id_user') %}
         {% include 'review/reviewC.html.twig' with {'form': form} %}

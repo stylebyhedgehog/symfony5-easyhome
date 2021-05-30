@@ -154,6 +154,11 @@
                                     </div>
                                 </div>
                             </div>
+                            <div>
+                                {% if ad.district is not empty %}
+                                Район: {{ ad.district }}
+                                {% endif %}
+                            </div>
                             {# Описание #}
                             <div style="background-color: #E0FFFF">
                                 {{ ad.description }}
@@ -251,7 +256,6 @@
             </div>
         </div>
     </div>
-    {# TODO ОТДЕЛЬНЫЙ ФАЙЛ #}
     <script>
         $('#form_status').change(function () {
             $("#form_save").click()

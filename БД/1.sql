@@ -1,0 +1,6 @@
+INSERT INTO public.client (id, email, roles, password) VALUES (6, 'client0@client.ru', '["ROLE_USER","ROLE_VERIFIED"]', '$argon2id$v=19$m=65536,t=4,p=1$UXA4bDRsSWxSaXA0aVBtag$+TQFpgz0YHJ9eeDXAJ+oihcytQCLRoeATe2Pw77OPxw');
+INSERT INTO public.client (id, email, roles, password) VALUES (8, 'agent1@agent.ru', '["ROLE_USER","ROLE_VERIFIED","ROLE_AGENT"]', '$argon2id$v=19$m=65536,t=4,p=1$cjBvVTNxTi5JL2dmZC90Vw$iKUFfP/BYcspZWMc/SmkTsI6lxoQiV1G6sxOIw1Vfzg');
+INSERT INTO public.client (id, email, roles, password) VALUES (7, 'agent0@agent.ru', '["ROLE_USER","ROLE_VERIFIED","ROLE_AGENT"]', '$argon2id$v=19$m=65536,t=4,p=1$cFdPMFYvcjhUMmhMaDhzUg$Lwc7r5fZvMgDPKaV0NIMl+FX5/NFhVqRtAUOnYhZ61U');
+INSERT INTO public.client (id, email, roles, password) VALUES (9, 'client1@client.ru', '["ROLE_USER","ROLE_VERIFIED"]', '$argon2id$v=19$m=65536,t=4,p=1$U3JnajdzbW1kdUJuaE5IQw$F36kC81AMdjY5eX+xJxagaA8MF/BgOydsMHGkCKdSyg');
+INSERT INTO public.client (id, email, roles, password) VALUES (10, 'client3@client.ru', '["ROLE_USER","ROLE_VERIFIED"]', '$argon2id$v=19$m=65536,t=4,p=1$Z3VZQzJ6Lm1xZ05VbzJHOQ$3aNVMW1ASFEgnAwJ+sOBbh2zt1GvYfFSsYjafD6vWoA');
+INSERT INTO public.client (id, email, roles, password) VALUES (11, 'admin@admin.ru', '["ROLE_USER","ROLE_VERIFIED","ROLE_ADMIN"]', '$argon2id$v=19$m=65536,t=4,p=1$RU5yaHBBM05mWFBkU0Jrdg$Gp8XY0BXYCArksCUDmJ3fXMJLi4ApWgSZW5MR/zulk4');

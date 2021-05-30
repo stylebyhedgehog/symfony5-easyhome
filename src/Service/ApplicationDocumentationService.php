@@ -24,7 +24,6 @@ class ApplicationDocumentationService
         $docDirectory = $publicDirectory . "/" . "doc" . "/";
         $word = new TemplateProcessor($docDirectory . "/rent.docx");
         $word = $this->rent($application, $word);
-        //TODO ШИФРОВАТЬ
         $word->saveAs($docDirectory . "document_" . $application->getId() . ".docx");
     }
 

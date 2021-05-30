@@ -7,9 +7,14 @@
             {{ form_widget(form.search,{'attr':{'hidden':'true'}}) }}
             {{ form_end(form , {'render_rest': false}) }}
         </div>
-        {% if applications is empty %}
+
+            {% if app.user.applicationsSent is empty %}
                 <div class="alert alert-info" role="alert">
                     Вы не создали ни одной заявки
+                </div>
+            {% elseif applications is empty %}
+                <div class="alert alert-info" role="alert">
+                    По запросу ничего не найдено
                 </div>
         {% else %}
             {% for application in applications %}

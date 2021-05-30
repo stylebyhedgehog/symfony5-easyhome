@@ -4,7 +4,7 @@
 namespace App\Controller;
 
 
-use App\Data\ApplicationDTO;
+use App\Entity\ApplicationDTO;
 use App\Entity\Application;
 use App\Form\ApplicationFilterType;
 use App\Repository\AdRepository;
@@ -64,7 +64,7 @@ class ApplicationController extends AbstractController
      * @return RedirectResponse
      */
     public function client_application_remove(int $id_user, int $id_ad){
-        $application=$this->applicationRepository->findOneBy(['id_sender'=>$id_user,'id_ad'=>$id_ad]);
+        $application=$this->applicationRepository->findOneBy(['sender'=>$id_user,'ad'=>$id_ad]);
         $this->denyAccessUnlessGranted('delete',$application);
         $this->entityManager->remove($application);
         $this->entityManager->flush();
@@ -118,7 +118,6 @@ class ApplicationController extends AbstractController
      */
     public function client_application_incoming_by_ad(int $id_user,int $id_ad, Request $request){
         $this->denyAccessUnlessGranted('view_section',$id_user);
-        //todo сервис
         if($this->adRepository->find($id_ad)->getOwner()!==$this->getUser()){
             throw new AccessDeniedException();
         }

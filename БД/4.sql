@@ -1,0 +1,10 @@
+INSERT INTO public.ad_image (id, ad_id, filename) VALUES (6, 3, '1.jpg');
+INSERT INTO public.ad_image (id, ad_id, filename) VALUES (7, 3, '2.jpg');
+INSERT INTO public.ad_image (id, ad_id, filename) VALUES (9, 5, '4.jpg');
+INSERT INTO public.ad_image (id, ad_id, filename) VALUES (10, 5, '5.jpg');
+INSERT INTO public.ad_image (id, ad_id, filename) VALUES (11, 6, '6.jpg');
+INSERT INTO public.ad_image (id, ad_id, filename) VALUES (12, 7, '7.jpg');
+INSERT INTO public.ad_image (id, ad_id, filename) VALUES (13, 6, '6.jpg');
+INSERT INTO public.ad_image (id, ad_id, filename) VALUES (14, 8, '10.png');
+INSERT INTO public.ad_image (id, ad_id, filename) VALUES (16, 10, '8.jpg');
+INSERT INTO public.ad_image (id, ad_id, filename) VALUES (17, 11, '9.jpg');

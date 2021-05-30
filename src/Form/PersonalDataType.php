@@ -19,7 +19,8 @@ class PersonalDataType extends AbstractType
             ->add('surname', TextType::class,
                 ['label' => 'Фамилия'])
             ->add('passport', TextType::class,
-                ['label' => 'Паспорт'])
+                ['label' => 'Паспорт',
+                    'attr'=>['placeholder'=>"1234 567890"]])
             ->add('save', SubmitType::class,
                 ['label' => 'Сохранить']);
     }

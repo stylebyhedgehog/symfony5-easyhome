@@ -9,6 +9,7 @@ use App\Form\PersonalDataType;
 use App\Repository\ClientRepository;
 use App\Repository\PersonalDataRepository;
 use App\Service\constants\PersonalDataStatus;
+use App\Service\PassportVerificationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -50,14 +51,22 @@ class PersonalDataController extends AbstractController
      * @param int $id_user
      * @return RedirectResponse|Response
      */
-    public function create(Request $request, int $id_user)
+    public function create(Request $request, int $id_user, PassportVerificationService $passportVerificationService)
     {
+        $error = "";
         $this->denyAccessUnlessGranted('view_section', $id_user);
         $personal_data = new PersonalData();
         $form = $this->createForm(PersonalDataType::class, $personal_data);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $error=$passportVerificationService->mock( $personal_data);
+            if($error!=null){
+                return $this->render('personalData/personalDataC.html.twig', [
+                    'form' => $form->createView(),
+                    'error' => $error
+                ]);
+            }
             $client = $this->getUser()->addRoles('ROLE_VERIFIED');
             $personal_data->setClient($client);
             $personal_data->setStatus(PersonalDataStatus::$status_ok);
@@ -68,6 +77,7 @@ class PersonalDataController extends AbstractController
         }
         return $this->render('personalData/personalDataC.html.twig', [
             'form' => $form->createView(),
+            'error' => $error
         ]);
     }
 }

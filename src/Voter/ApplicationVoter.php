@@ -30,7 +30,6 @@ class ApplicationVoter extends Voter
     {
 
         if (!in_array($attribute, array(self::ACCEPT, self::CANCEL, self::DELETE,self::CREATE))) {
-
             return false;
         }
 
@@ -42,9 +41,7 @@ class ApplicationVoter extends Voter
 
     protected function voteOnAttribute(string $attribute, $subject, TokenInterface $token)
     {
-
         $user = $token->getUser();
-
         /** @var Application $application */
         $application = $subject;
         if ($user instanceof UserInterface) {
@@ -72,7 +69,7 @@ class ApplicationVoter extends Voter
         throw new LogicException();
     }
 
-    // todo accept user accept client
+
     private function canAcceptOrCancel(Application $application, UserInterface $user)
     {
         if($application->getOwner()===$user and $this->security->isGranted('ROLE_VERIFIED')){
@@ -101,7 +98,7 @@ class ApplicationVoter extends Voter
             and !$this->security->isGranted("ROLE_AGENT")
             and $application->getSender()===$user
             and $application->getOwner()!==$user
-            and $application->getAd()->getStatus()== AdStatus::$status_ok;
+            and $application->getAd()->getStatusNumber()== AdStatus::$status_ok;
 
     }
 }

@@ -4,7 +4,7 @@
 namespace App\Form;
 
 
-use App\Data\AdDTO;
+use App\Entity\AdDto;
 use App\Service\constants\AdFilter;
 use App\Service\constants\AdStatus;
 use App\Controller\RegionCityController;
@@ -26,7 +26,6 @@ class AdFilterType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $rcService = new RegionCityController();
-        //TODO РЕШИТЬ ОШИБКУ С ОШИБКАМИ ПРИ ВЫХОДЕ ЗА STEP
         $builder
             ->add('q', SearchType::class,
                 ['attr' => [
@@ -112,7 +111,7 @@ class AdFilterType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => AdDTO::class,
+            'data_class' => AdDto::class,
             'mode' => 'all_choices'
         ]);
     }

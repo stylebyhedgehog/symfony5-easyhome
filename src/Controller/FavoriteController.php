@@ -10,6 +10,7 @@ use App\Repository\ClientRepository;
 use App\Repository\FavoriteRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Finder\Exception\AccessDeniedException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -60,7 +61,7 @@ class FavoriteController extends AbstractController
      */
     public function create(Request $request){
         $favorite=new Favorite();
-        $favorite->setClient($this->clientRepository->find($request->get("id_user")));
+        $favorite->setClient($this->getUser());
         $favorite->setAd($this->adRepository->find($request->get("id_ad")));
         $this->entityManager->persist($favorite);
         $this->entityManager->flush();
@@ -74,6 +75,7 @@ class FavoriteController extends AbstractController
      */
     public function remove(Request $request){
         $favorite=$this->favoriteRepository->findOneBy(["ad"=>$request->get("id_ad"),"client"=>$request->get("id_user")]);
+        if ($favorite->getClient()!==$this->getUser()){throw new AccessDeniedException();}
         $this->entityManager->remove($favorite);
         $this->entityManager->flush();
         return $this->redirect($request->headers->get('referer'));

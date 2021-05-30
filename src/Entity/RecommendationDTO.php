@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\DTO;
+namespace App\Entity;
 
 
 class RecommendationDTO

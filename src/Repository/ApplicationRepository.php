@@ -2,7 +2,7 @@
 
 namespace App\Repository;
 
-use App\Data\ApplicationDTO;
+use App\Entity\ApplicationDTO;
 use App\Entity\Application;
 use App\Service\constants\ApplicationFilter;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;

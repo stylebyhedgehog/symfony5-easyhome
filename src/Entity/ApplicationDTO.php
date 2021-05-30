@@ -1,7 +1,7 @@
 <?php
 
 
-namespace App\Data;
+namespace App\Entity;
 
 
 class ApplicationDTO

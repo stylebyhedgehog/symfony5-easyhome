@@ -28,11 +28,9 @@ class AdVoter extends Voter
 
     protected function supports(string $attribute, $subject)
     {
-
-        if (!in_array($attribute, array(self::VIEW, self::EDIT, self::DELETE))) {
+        if (!in_array($attribute, array(self::VIEW, self::EDIT, self::DELETE,self::CREATE))) {
             return false;
         }
-
         if (!$subject instanceof Ad) {
             return false;
         }
@@ -41,6 +39,7 @@ class AdVoter extends Voter
 
     protected function voteOnAttribute(string $attribute, $subject, TokenInterface $token)
     {
+
         $user = $token->getUser();
 
         /** @var Ad $ad */
@@ -98,8 +97,7 @@ class AdVoter extends Voter
     private function canCreate(Ad $ad, UserInterface $user)
     {
         return $this->security->isGranted("ROLE_VERIFIED")
-            and !$this->security->isGranted("ROLE_AGENT")
-            and $ad->getOwner() === $user;
+            and !$this->security->isGranted("ROLE_AGENT");
 
     }
 }

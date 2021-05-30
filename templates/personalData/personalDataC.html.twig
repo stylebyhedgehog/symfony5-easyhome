@@ -1,7 +1,14 @@
-{% extends 'profile.html.twig' %}
+{% extends 'profile.html.twig' %}{% block title %}Заполнить{% endblock %}
 {% block active_block %}
     {% form_theme form 'bootstrap_4_layout.html.twig' %}
     {% if app.user.id==app.request.get('id_user') %}
+        <div class="row">
+            {% if error is not empty %}
+                <div class="alert alert-danger" role="alert">
+                    {{ error }}
+                </div>
+            {% endif %}
+        </div>
         {{ form_start(form) }}
         <div class="mb-3">
             {{ form_row(form.name) }}
